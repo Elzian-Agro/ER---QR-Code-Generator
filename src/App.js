@@ -1,14 +1,16 @@
-import logo from './logo.svg';
-import './App.css';
-import Login from '../src/pages/login';
-import QR from '../src/pages/qrGenerator';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "../src/pages/login";
+import QR from "../src/pages/qrGenerator";
 
 function App() {
   return (
-    <div className="App">
-      <Login/>
-      <QR/>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/qr" element={<QR />} />
+      </Routes>
+    </Router>
   );
 }
 
