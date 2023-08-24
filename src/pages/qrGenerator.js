@@ -1,6 +1,6 @@
 import React from "react";
 import { useAuth } from "../AuthContext";
-import { Navigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import ".././assets/styles/main.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,11 +13,21 @@ import "../assets/fontAwesome/fontAwesomeIcon";
 import qr from "../assets/sampleqr.jpg";
 
 const QrGenerator = () => {
-  // const { authenticated } = useAuth();
+  const { authenticated } = useAuth();
+  const navigate = useNavigate();
 
-  // if (!authenticated) {
-  //   return <Navigate to="/" />;
-  // }
+  if (!authenticated) {
+    return <Navigate to="/unAuth" />;
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem("rememberedUsername");
+    localStorage.removeItem("rememberedPassword");
+
+
+
+    navigate("/login"); 
+  };
 
   return (
     <section id="qrfinder" className="py-5">
@@ -27,27 +37,18 @@ const QrGenerator = () => {
             <h2 className="display-4 mb-4">Generate QR CODE</h2>
             <hr />
             <p>
-              Excel URL:{" "}
-              <span>
-                <a
-                  href="https://shorturl.at/lGY23"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  https://shorturl.at/lGY23
-                </a>
-              </span>
-            </p>
+              Excel URL:
+              <input
+                  className="form-control"
+                  placeholder="Enter Excel Sheet URL"
+                ></input>
+            </p><br/>
             <p>Upload your details </p>
             <div>
-              {/* <button className="btn-btn">
-                <FontAwesomeIcon icon={faUpload} />
-                  Upload
-                </a>
-              </button> */}
+
 
               <form>
-                <label for="fileInput">Upload file: </label>
+                <label for="fileInput">Upload file XLS:&nbsp; </label>
                 <input type="file" name="fileInput" id="fileInput" />
                 <input type="submit" className="btn-btn" value="Upload" />
               </form>
@@ -67,6 +68,10 @@ const QrGenerator = () => {
             <button className="btn-btn">
               <FontAwesomeIcon icon={faSync} />
               Generate QR Code
+            </button>
+            <button className="btn btn-danger" onClick={handleLogout}>
+              
+              Logout
             </button>
           </div>
 
