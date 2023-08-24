@@ -69,6 +69,15 @@
   margin-right: 5px;
 }
 
+#dropdown {
+  background-color: green;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
 @media screen and (max-width: 767px) {
   #qrfinder {
     width: 100%;

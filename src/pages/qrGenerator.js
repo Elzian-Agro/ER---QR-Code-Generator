@@ -68,6 +68,10 @@ const QrGenerator = () => {
               <FontAwesomeIcon icon={faDownload} />
               Download
             </button>
+            <select id="dropdown">
+              <option value="PNG">PNG</option>
+              <option value="Pdf">Pdf</option>
+            </select>
           </div>
           <div></div>
         </div>
