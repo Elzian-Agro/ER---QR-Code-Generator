@@ -46,11 +46,7 @@ const QrGenerator = () => {
                 </a>
               </button> */}
 
-              <form
-                action="upload.php"
-                method="post"
-                enctype="multipart/form-data"
-              >
+              <form>
                 <label for="fileInput">Upload file: </label>
                 <input type="file" name="fileInput" id="fileInput" />
                 <input type="submit" className="btn-btn" value="Upload" />
