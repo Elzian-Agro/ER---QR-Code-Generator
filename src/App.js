@@ -1,16 +1,21 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "../src/pages/login";
-import QR from "../src/pages/qrGenerator";
+import LoginForm from "./pages/login"; // Update the import path
+// import RegisterForm from "./pages/RegisterForm"; 
+import QrGenerator from "./pages/qrGenerator";
+import { Auth } from './AuthContext';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/qr" element={<QR />} />
-      </Routes>
-    </Router>
+    <Auth>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/qr" element={<QrGenerator />} />
+          
+        </Routes>
+      </Router>
+    </Auth>
   );
 }
 

@@ -1,8 +1,21 @@
-import React from "react";
-import ".././assets/styles/main.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "../assets/fontAwesome/fontAwesomeIcon";
+import React from 'react';
+import { useAuth } from '../AuthContext';
+import { Navigate } from 'react-router-dom';
 
-export default function qrGenerator() {
-  return <div>qrGenerator</div>;
-}
+const QrGenerator = () => {
+  const { authenticated } = useAuth();
+
+  if (!authenticated) {
+    return <Navigate to="/" />; 
+  }
+
+
+
+  return (
+    <div>
+      {}
+    </div>
+  );
+};
+
+export default QrGenerator;
