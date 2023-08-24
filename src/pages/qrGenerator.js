@@ -1,20 +1,78 @@
-import React from 'react';
-import { useAuth } from '../AuthContext';
-import { Navigate } from 'react-router-dom';
+import React from "react";
+import { useAuth } from "../AuthContext";
+import { Navigate } from "react-router-dom";
+import ".././assets/styles/main.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUpload,
+  faEye,
+  faDownload,
+  faSync,
+} from "@fortawesome/free-solid-svg-icons";
+import "../assets/fontAwesome/fontAwesomeIcon";
+import qr from "../assets/sampleqr.jpg";
 
 const QrGenerator = () => {
-  const { authenticated } = useAuth();
+  // const { authenticated } = useAuth();
 
-  if (!authenticated) {
-    return <Navigate to="/" />; 
-  }
-
-
+  // if (!authenticated) {
+  //   return <Navigate to="/" />;
+  // }
 
   return (
-    <div>
-      {}
-    </div>
+    <section id="qrfinder" className="py-5">
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-7">
+            <h2 className="display-4 mb-4">Generate QR CODE</h2>
+            <p>
+              Excel URL:{" "}
+              <span>
+                <a
+                  href="https://shorturl.at/lGY23"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  https://shorturl.at/lGY23
+                </a>
+              </span>
+            </p>
+            <p>Upload your details </p>
+            <div>
+              <button className="btn-btn">
+                <FontAwesomeIcon icon={faUpload} />
+                <a
+                  href="https://shorturl.at/lGY23"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Upload
+                </a>
+              </button>
+              <button className="btn-btn">
+                <FontAwesomeIcon icon={faEye} />
+                View
+              </button>
+            </div>
+            <br></br>
+            <button className="btn-btn">
+              <FontAwesomeIcon icon={faSync} />
+              Generate QR Code
+            </button>
+          </div>
+
+          <div className="col-lg-5">
+            <img src={qr} alt="Contact Us" className="img-fluid" />
+            <br />
+            <button className="btn-btn">
+              <FontAwesomeIcon icon={faDownload} />
+              Download
+            </button>
+          </div>
+          <div></div>
+        </div>
+      </div>
+    </section>
   );
 };
 
