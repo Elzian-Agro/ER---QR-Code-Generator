@@ -25,6 +25,7 @@ const QrGenerator = () => {
         <div className="row">
           <div className="col-lg-7">
             <h2 className="display-4 mb-4">Generate QR CODE</h2>
+            <hr />
             <p>
               Excel URL:{" "}
               <span>
@@ -39,19 +40,31 @@ const QrGenerator = () => {
             </p>
             <p>Upload your details </p>
             <div>
-              <button className="btn-btn">
+              {/* <button className="btn-btn">
                 <FontAwesomeIcon icon={faUpload} />
+                  Upload
+                </a>
+              </button> */}
+
+              <form
+                action="upload.php"
+                method="post"
+                enctype="multipart/form-data"
+              >
+                <label for="fileInput">Upload file: </label>
+                <input type="file" name="fileInput" id="fileInput" />
+                <input type="submit" className="btn-btn" value="Upload" />
+              </form>
+
+              <button className="btn-btn">
+                <FontAwesomeIcon icon={faEye} />
                 <a
                   href="https://shorturl.at/lGY23"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Upload
+                  View
                 </a>
-              </button>
-              <button className="btn-btn">
-                <FontAwesomeIcon icon={faEye} />
-                View
               </button>
             </div>
             <br></br>
