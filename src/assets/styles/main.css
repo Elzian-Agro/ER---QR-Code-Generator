@@ -26,14 +26,6 @@
   /* margin-left: 20%; */
 }
 
-#qrfinder span {
-  cursor: pointer;
-  font-weight: 600;
-  border: 2px solid black;
-  padding: 0.3rem;
-  margin: 10px;
-}
-
 #qrfinder span a {
   color: black;
   text-decoration: none;
@@ -49,7 +41,7 @@
 }
 
 #qrfinder .btn-btn {
-  padding: 10px 20px;
+  padding: 13px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -81,6 +73,19 @@
   border: none;
   cursor: pointer;
   border-radius: 5px;
+}
+.card{
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.card:hover{
+  cursor: pointer;
+}
+#dropdown{
+  padding-bottom: 13px;
+}
+
+.qr-gen{
+  margin-top: 80px;
 }
 
 @media screen and (max-width: 767px) {
@@ -145,7 +150,7 @@
 
 .input-container {
   position: relative;
-  margin: 30px;
+  margin: 36px;
 }
 
 .input-label {
@@ -187,6 +192,9 @@
   margin-left: 70px;
   margin-right: 50px;
 }
+.gen-btn{
+  margin-left: 800px;
+}
 .btn-one {
   padding: 10px 20px;
   background-color: rgb(70, 70, 70);
@@ -204,12 +212,15 @@
   color: white !important;
 }
 .btn-danger {
-  margin-left: 220px;
+  margin-left: 550px;
 }
 .form-control {
   width: 88%;
+  background-color: rgb(245, 245, 245);
 }
-
+input{
+  height: 50px;
+}
 /* Media queries for responsive design */
 @media (max-width: 768px) {
   .login-card {
