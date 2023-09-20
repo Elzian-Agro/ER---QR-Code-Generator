@@ -12,16 +12,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "../assets/fontAwesome/fontAwesomeIcon";
 import qr from "../assets/sampleqr.jpg";
-import XLSX from 'xlsx';
-import QRCode from 'qrcode.react';
+import { utils,read} from 'xlsx';
+import { useState } from "react";
 
 const QrGenerator = () => {
   const { authenticated } = useAuth();
   const navigate = useNavigate();
 
-  if (!authenticated) {
-    return <Navigate to="/unAuth" />;
-  }
+  // if (!authenticated) {
+  //   return <Navigate to="/unAuth" />;
+  // }
 
   const handleLogout = () => {
     localStorage.removeItem("rememberedUsername");
@@ -30,59 +30,30 @@ const QrGenerator = () => {
     navigate("/login");
   };
 
-  const generateQRCode = (data) => {
-    // Process the data and generate QR codes
-    const qrCodes = data.map((row, index) => (
-      <div key={index}>
-        <p>Ref No: {row[0]}</p>
-        <p>Farmers Name: {row[1]}</p>
-        <p>Registration No: {row[2]}</p>
-        <p>LF UNIT NO: {row[3]}</p>
-        <p>Inestors Details: {row[4]}</p>
-        <p>Unit Established  Date: {row[5]}</p>
-        <p>GPS: {row[6]}</p>
-        <p>Species: {row[7]}</p>
-        <p>PB Accumilation/Grms(1 years): {row[8]}</p>
-        <p>Dynamic Carbon Capturing, Grams of C (1 years): {row[9]}</p>
-        <p>O2 Production/Liters (1 years): {row[10]}</p>
-        <p>H2O Production/Liters (1 years): {row[11]}</p>
-        <p>PB Accumilation/Grms(2 years): {row[12]}</p>
-        <p>Dynamic Carbon Capturing, Grams of C (2 years): {row[13]}</p>
-        <p>O2 Production/Liters (2 years): {row[14]}</p>
-        <p>H2O Production/Liters (2 years): {row[15]}</p>
-        <p>PB Accumilation/Grms(3 years): {row[16]}</p>
-        <p>Dynamic Carbon Capturing, Grams of C (3 years): {row[17]}</p>
-        <p>O2 Production/Liters (3 years): {row[18]}</p>
-        <p>H2O Production/Liters (3 years): {row[19]}</p>
-        <p>PB Accumilation/Grms(4 years): {row[20]}</p>
-        <p>Dynamic Carbon Capturing, Grams of C (4 years): {row[21]}</p>
-        <p>O2 Production/Liters (4 years): {row[22]}</p>
-        <p>H2O Production/Liters (4 years): {row[23]}</p>
-        <p>PB Accumilation/Grms(SUMMERY): {row[24]}</p>
-        <p>Dynamic Carbon Capturing, Grams of C (SUMMERY): {row[25]}</p>
-        <p>O2 Production/Liters (SUMMERY): {row[26]}</p>
-        <p>H2O Production/Liters (SUMMERY): {row[27]}</p>
-        <QRCode value={JSON.stringify(row)} />
-      </div>
-    ));
-  };
-
-  const handlesheet = async (file) => {
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-      // Extract the necessary columns and generate QR codes
-      generateQRCode(jsonData);
-    };
-
-    reader.readAsArrayBuffer(file);
-  };
+    const [excelData,setExcelData] = useState([])
+    const [excelError,setExcelError] = useState('')
+    const file_type=['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel']
+    const handleChange = (e)=>{
+    const selected_file=e.target.files[0];
+    if(selected_file){
+      if(selected_file && file_type.includes(selected_file.type)){
+let reader=new FileReader();
+reader.onload=(e)=>{
+  const workbook=read(e.target.result);
+  const sheet=workbook.SheetNames;
+  if(sheet.length){
+    const data=utils.sheet_to_json(workbook.Sheets[sheet[0]]);
+    setExcelData(data);
+  }
+}
+reader.readAsArrayBuffer(selected_file)
+      }else{
+        setExcelError('please upload only excel file')
+        setExcelData([])
+      }
+      
+    }
+    }
 
   return (
     <section id="qrfinder" className="py-5">
@@ -112,7 +83,7 @@ const QrGenerator = () => {
             <div>
               <form>
                 <label for="fileInput">Upload file XLS:&nbsp; </label>
-                <input type="file" name="fileInput" id="fileInput" />
+                <input type="file" name="fileInput" id="fileInput" onChange={handleChange}/>
                 <input type="submit" className="btn-btn" value="Upload" />
                 <button className="btn-btn view-btn">
                   <FontAwesomeIcon icon={faEye} />
@@ -128,7 +99,7 @@ const QrGenerator = () => {
             </div>
             <br></br>
             <div className="gen-btn">
-              <button className="btn-btn" onClick={handlesheet}>
+              <button className="btn-btn">
                 <FontAwesomeIcon icon={faSync} />
                 Generate QR Code
               </button>
@@ -140,59 +111,73 @@ const QrGenerator = () => {
           <h2>Your QR Codes</h2>
           <hr />
         </div>
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>Ref_No</th>
+                <th>Farmers_Name</th>
+                <th>Registration_No</th>
+                <th>LF_UNIT_NO</th>
+                <th>Unit_Established_Date</th>
+                <th>Farmers_Name</th>
+                <th>GPS</th>
+                <th>Species</th>
+                <th>PB_Accumilation/Grms(1-years)</th>
+                <th>Dynamic Carbon Capturing, Grams of C (1-years)</th>
+                <th>O2_Production/Liters (1-years)</th>
+                <th>H2O_Production/Liters (1-years)</th>
+                <th>PB_Accumilation/Grms(2-years)</th>
+                <th>Dynamic Carbon Capturing, Grams of C (2-years)</th>
+                <th>O2_Production/Liters (2-years)</th>
+                <th>H2O_Production/Liters (2-years)</th>
+                <th>PB_Accumilation/Grms(3-years)</th>
+                <th>Dynamic Carbon Capturing, Grams of C (3-years)</th>
+                <th>O2_Production/Liters (3-years)</th>
+                <th>H2O_Production/Liters (3-years)</th>
+                <th>PB_Accumilation/Grms(4-years)</th>
+                <th>Dynamic Carbon Capturing, Grams of C (4-years)</th>
+                <th>O2_Production/Liters (4-years)</th>
+                <th>H2O_Production/Liters (4-years)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {              
+excelData.length
+?
+excelData.map((info)=>(
+  <tr>
+    <td>{info.Ref_No}</td>
+    <td>{info.Name}</td>
+    <td>{info.Registration_No}</td>
+    <td>{info.LF_UNIT_NO}</td>
+    <td>{info.Unit_Established_Date}</td>
+    <td>{info.GPS}</td>
+    <td>{info.Species}</td>
+    <td>{info.PB_Accumilation_Grms_1_years}</td>
+    <td>{info.Dynamic_Carbon_Capturing_Grams_of_C_1_years}</td>
+    <td>{info.O2_Production_Liters_1_years}</td>
+    <td>{info.H2O_Production_Liters_1_years}</td>
+    <td>{info.PB_Accumilation_Grms_2_years}</td>
+    <td>{info.Dynamic_Carbon_Capturing_Grams_of_C_2_years}</td>
+    <td>{info.O2_Production_Liters_2_years}</td>
+    <td>{info.H2O_Production_Liters_2_years}</td>
+    <td>{info.PB_Accumilation_Grms_3_years}</td>
+    <td>{info.Dynamic_Carbon_Capturing_Grams_of_C_3_years}</td>
+    <td>{info.O2_Production_Liters_3_years}</td>
+    <td>{info.H2O_Production_Liters_3_years}</td>
+    <td>{info.PB_Accumilation_Grms_4_years}</td>
+    <td>{info.Dynamic_Carbon_Capturing_Grams_of_C_4_years}</td>
+    <td>{info.O2_Production_Liters_4_years}</td>
+    <td>{info.H2O_Production_Liters_4_years}</td>
+  </tr>
+))
+:
+excelError.length ? <tr>{excelError}</tr>:
 
-        <div className="row">
-          {/* Card 1 */}
-          <div className="col-md-4">
-            <Card style={{ width: "19rem" }} className="card">
-              <Card.Img variant="top" src={qr} />
-              <Card.Body>
-                <Card.Title>Tree ID : #712638</Card.Title>
-                <Button className="btn-btn">
-                  <FontAwesomeIcon icon={faDownload} />
-                  Download
-                </Button>
-                <select id="dropdown">
-                  <option value="PNG">PNG</option>
-                  <option value="Pdf">Pdf</option>
-                </select>
-              </Card.Body>
-            </Card>
-          </div>
-          {/* Card 2 */}
-          <div className="col-md-4">
-            <Card style={{ width: "19rem" }} className="card">
-              <Card.Img variant="top" src={qr} />
-              <Card.Body>
-                <Card.Title>Tree ID : #712638</Card.Title>
-                <Button className="btn-btn">
-                  <FontAwesomeIcon icon={faDownload} />
-                  Download
-                </Button>
-                <select id="dropdown">
-                  <option value="PNG">PNG</option>
-                  <option value="Pdf">Pdf</option>
-                </select>
-              </Card.Body>
-            </Card>
-          </div>
-          {/* Card 3 */}
-          <div className="col-md-4">
-            <Card style={{ width: "19rem" }} className="card">
-              <Card.Img variant="top" src={qr} />
-              <Card.Body>
-                <Card.Title>Tree ID : #712638</Card.Title>
-                <Button className="btn-btn">
-                  <FontAwesomeIcon icon={faDownload} />
-                  Download
-                </Button>
-                <select id="dropdown">
-                  <option value="PNG">PNG</option>
-                  <option value="Pdf">Pdf</option>
-                </select>
-              </Card.Body>
-            </Card>
-          </div>
+<tr>No user data is present</tr>}
+            </tbody> 
+          </table>
         </div>
       </div>
     </section>
