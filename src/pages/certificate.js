@@ -27,15 +27,15 @@ export default function Certificate() {
               {/* Left side with QR code and logo */}
 
               <div className="col-md-6">
-                <img src={qr} alt="QR Code" width="200" height="200" />
-                <img src={logo} alt="Logo" width="200" height="150" />
+                {/* <img src={qr} alt="QR Code" width="200" height="200" />
+                <img src={logo} alt="Logo" width="200" height="150" /> */}
               </div>
               <div className="col-sm" style={{ paddingLeft: '400px'}}>
-                <img src={certi}></img>
+                {/* <img src={certi}></img> */}
               </div>
               <div class="w-100"></div>
               <div class="col">
-                <img src={chart}></img>
+                {/* <img src={chart}></img> */}
               </div>
             </div>
 
@@ -69,9 +69,9 @@ export default function Certificate() {
           </div>
         </div>
       </div>
-      <div className="download-btn">
+      {/* <div className="download-btn">
       <button onClick={generatePDF} className="button-44">Download PDF</button>
-      </div>
+      </div> */}
     </>
   );
 }
