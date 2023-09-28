@@ -366,7 +366,18 @@ const QrGenerator = () => {
 
         {qrCodeData.length > 0 && (
           <div className="qr-gen">
-            <h2>Your QR Codes</h2>
+            <h2>Your QR Codes
+            <span className="">
+                {" "}
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  
+                >
+                  Download All
+                </button>
+              </span>
+            </h2>
             <hr />
             <div className="qr-code-list">
               {qrCodeData.map((qrCode, index) => (
@@ -469,34 +480,36 @@ const QrGenerator = () => {
                       </div>
                     </div>
 
+                    <div className="certificate-content">
                     <div className="col-sm text-center">
                       {/* Centered text content */}
-                      <h2>Payment for Photosynthetic Biomass</h2>
+                      <h2>Payment for <br/>Photosynthetic Biomass</h2>
                       <h2>
                         Sir{" "}
                         <h4>
                           <u>{excelData[selectedRow].Name}</u>
                         </h4>{" "}
-                        made to Mr/Mrs
+                        <h5>made to</h5>Mr/Mrs
                       </h2>
                       <br />
                       <br />
                       <h4>
                         <u>Name here</u>,<u>Name here</u>
                       </h4>
-                      <h4>being a record of the settlement for maintaining</h4>
+                      <h4>being a record of the settlement<br/> for maintaining</h4>
 
                       <h4>
                         <u>Numbers here</u>
                       </h4>
                       <br />
                       <h2>
-                        EarthRestoration tree UNIT(s) contracted for 4 years
+                        EarthRestoration tree <br/>UNIT(s) contracted for 4 years
                       </h2>
                       <br />
                       <h4>
                         <u>Numbers here</u>
                       </h4>
+                    </div>
                     </div>
                   </div>
                 </div>

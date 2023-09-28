@@ -304,6 +304,17 @@ input{
 #certificate{
   padding: 30px;
 }
+
+#certificate img{
+  margin-top: -60%;
+}
+
+#certificate .certificate-content{
+  margin-top: -50%;
+  margin-bottom: 90px;
+  margin-left: 300px;
+}
+
 .download-btn{
   position: fixed;
   bottom: 80px; /* Adjust the distance from the bottom as needed */
@@ -362,9 +373,17 @@ input{
   gap: 20px;
 }
 
+.qr-gen span .btn{
+  margin-left: 50%;
+}
+
 .qr-code-item {
   flex: 1;
-  max-width: 25%;
+  max-width: 14%;
+}
+
+.qr-code-item button{
+  width: 100%;
 }
 
 .custom-table {
