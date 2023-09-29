@@ -305,10 +305,6 @@ input{
   padding: 30px;
 }
 
-#certificate img{
-  margin-top: -60%;
-}
-
 #certificate .certificate-content{
   margin-top: -50%;
   margin-bottom: 90px;

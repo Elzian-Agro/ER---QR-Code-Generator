@@ -36,15 +36,6 @@ const QrGenerator = () => {
     navigate("/login");
   };
 
-  const generateQRCodeDataForSelectedRow = () => {
-    if (selectedRow !== null && excelData[selectedRow]) {
-      const rowData = excelData[selectedRow];
-      const qrCodeData = `https://example.com/certificate/${rowData.Ref_No}`; // Replace with your actual URL
-      return qrCodeData;
-    }
-    return ""; // Return an empty string if there's no selected row
-  };
-
   const generatePDF = () => {
     if (selectedRow !== null && excelData[selectedRow]) {
       const rowData = excelData[selectedRow];
@@ -67,6 +58,7 @@ const QrGenerator = () => {
   const [excelError, setExcelError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedQRCodeData, setSelectedQRCodeData] = useState(null);
 
   const openModal = () => {
     setShowModal(true);
@@ -120,6 +112,7 @@ const QrGenerator = () => {
     });
 
     setQRCodeData(qrCodes);
+    setUniqueIds([...Array(excelData.length).keys()]);
   };
 
   const renderChart = () => {
@@ -253,7 +246,7 @@ const QrGenerator = () => {
               <FontAwesomeIcon icon={faEye} />
               View
             </button>
-            <Modal show={showModal} onHide={closeModal}>
+            <Modal show={showModal} onHide={closeModal} fullscreen={true}>
               <Modal.Header closeButton>
                 <Modal.Title>View Excel Data</Modal.Title>
               </Modal.Header>
@@ -366,14 +359,11 @@ const QrGenerator = () => {
 
         {qrCodeData.length > 0 && (
           <div className="qr-gen">
-            <h2>Your QR Codes
-            <span className="">
+            <h2>
+              Your QR Codes
+              <span className="">
                 {" "}
-                <button
-                  type="button"
-                  className="btn btn-success"
-                  
-                >
+                <button type="button" className="btn btn-success">
                   Download All
                 </button>
               </span>
@@ -387,7 +377,10 @@ const QrGenerator = () => {
                     <Button
                       className="mt-2"
                       variant="primary"
-                      onClick={() => setSelectedRow(index)}
+                      onClick={() => {
+                        setSelectedRow(index);
+                        setSelectedQRCodeData(qrCodeData[index]);
+                      }}
                     >
                       View Certificates
                     </Button>
@@ -406,6 +399,7 @@ const QrGenerator = () => {
         show={selectedRow !== null}
         onHide={() => setSelectedRow(null)}
         dialogClassName="modal-xl"
+        fullscreen={true}
       >
         <Modal.Header closeButton>
           <Modal.Title>Certificate</Modal.Title>
@@ -456,22 +450,15 @@ const QrGenerator = () => {
                   <div className="row">
                     <div className="col-md-9">
                       {/* Left side with QR code and logo */}
-                      <div className="text-center">
-                        <h4>QR Code:</h4>
-                        {selectedRow !== null && excelData[selectedRow] && (
-                          <QRCode value={generateQRCodeDataForSelectedRow()} />
-                        )}
+                      <div className="row">
+                        <div className="col-md-4">
+                          <img src={logo} alt="Logo" width="200" height="150" />
+                        </div>
+                        <div className="col-md-8">{selectedQRCodeData}</div>
                       </div>
 
-                      <div className="col-md-6">
-                        {/* <img src={qr} alt="QR Code" width="200" height="200" /> */}
-                        <img src={logo} alt="Logo" width="200" height="150" />
-                      </div>
-                      <div className="col-sm" style={{ paddingLeft: "400px" }}>
-                        {/* <img src={certi}></img> */}
-                      </div>
-                      <div class="w-100"></div>
-                      <div class="col">
+                      <div className="w-100"></div>
+                      <div className="col">
                         {/* <img src={chart}></img> */}
                         <div className="chart-container">
                           <canvas id="chart"></canvas>
@@ -481,39 +468,47 @@ const QrGenerator = () => {
                     </div>
 
                     <div className="certificate-content">
-                    <div className="col-sm text-center">
-                      {/* Centered text content */}
-                      <h2>Payment for <br/>Photosynthetic Biomass</h2>
-                      <h2>
-                        Sir{" "}
+                      <div className="col-sm text-center">
+                        {/* Centered text content */}
+                        <h2>
+                          Payment for <br />
+                          Photosynthetic Biomass
+                        </h2>
+                        <h2>
+                          Sir{" "}
+                          <h4>
+                            <u>{excelData[selectedRow].Name}</u>
+                          </h4>{" "}
+                          <h5>made to</h5>Mr/Mrs
+                        </h2>
+                        <br />
+                        <br />
                         <h4>
-                          <u>{excelData[selectedRow].Name}</u>
-                        </h4>{" "}
-                        <h5>made to</h5>Mr/Mrs
-                      </h2>
-                      <br />
-                      <br />
-                      <h4>
-                        <u>Name here</u>,<u>Name here</u>
-                      </h4>
-                      <h4>being a record of the settlement<br/> for maintaining</h4>
+                          <u>Name here</u>,<u>Name here</u>
+                        </h4>
+                        <h4>
+                          being a record of the settlement
+                          <br /> for maintaining
+                        </h4>
 
-                      <h4>
-                        <u>Numbers here</u>
-                      </h4>
-                      <br />
-                      <h2>
-                        EarthRestoration tree <br/>UNIT(s) contracted for 4 years
-                      </h2>
-                      <br />
-                      <h4>
-                        <u>Numbers here</u>
-                      </h4>
-                    </div>
+                        <h4>
+                          <u>Numbers here</u>
+                        </h4>
+                        <br />
+                        <h2>
+                          EarthRestoration tree <br />
+                          UNIT(s) contracted for 4 years
+                        </h2>
+                        <br />
+                        <h4>
+                          <u>Numbers here</u>
+                        </h4>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+
               <div className="download-btn">
                 <button onClick={generatePDF} className="button-44">
                   Download PDF
