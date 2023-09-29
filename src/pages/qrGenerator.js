@@ -456,7 +456,7 @@ const QrGenerator = () => {
                   <div className="row">
                     <div className="col-md-9">
                       {/* Left side with QR code and logo */}
-                      <div className="text-center">
+                      <div className="text-center logo-qr">
                         <h4>QR Code:</h4>
                         {selectedRow !== null && excelData[selectedRow] && (
                           <QRCode value={generateQRCodeDataForSelectedRow()} />

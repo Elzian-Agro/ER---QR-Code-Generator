@@ -309,6 +309,10 @@ input{
   margin-top: -60%;
 }
 
+#certificate .logo-qr{
+  margin-top: -80px;
+}
+
 #certificate .certificate-content{
   margin-top: -50%;
   margin-bottom: 90px;
