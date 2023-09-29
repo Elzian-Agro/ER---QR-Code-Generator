@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
+import domtoimage from "dom-to-image";
+import { saveAs } from "file-saver";
 import { useAuth } from "../AuthContext";
 import { useNavigate, Navigate } from "react-router-dom";
 import ".././assets/styles/main.css";
@@ -16,18 +18,33 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "../assets/fontAwesome/fontAwesomeIcon";
 import { utils, read } from "xlsx";
-import { useState, useEffect } from "react";
 import QRCode from "qrcode.react";
 
 import { Chart } from "chart.js/auto";
 
 const QrGenerator = () => {
-  // const { authenticated } = useAuth();
+  const [excelData, setExcelData] = useState([]);
+  const [qrCodeData, setQRCodeData] = useState([]);
+  const [uniqueIds, setUniqueIds] = useState([]);
+  const [excelError, setExcelError] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedQRCodeData, setSelectedQRCodeData] = useState(null);
+  const { authenticated } = useAuth();
   const navigate = useNavigate();
+  const downloadLinkRef = useRef(null);
+  useEffect(() => {
+    if (selectedRow !== null && excelData.length > 0) {
+      // Run this code conditionally
+      renderChart();
+    }
+  }, [selectedRow, excelData]);
 
-  // if (!authenticated) {
-  //   return <Navigate to="/unAuth" />;
-  // }
+  if (!authenticated) {
+    return <Navigate to="/unAuth" />;
+  }
+
+  
 
   const handleLogout = () => {
     localStorage.removeItem("rememberedUsername");
@@ -52,13 +69,15 @@ const QrGenerator = () => {
     }
   };
 
-  const [excelData, setExcelData] = useState([]);
-  const [qrCodeData, setQRCodeData] = useState([]);
-  const [uniqueIds, setUniqueIds] = useState([]);
-  const [excelError, setExcelError] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [selectedQRCodeData, setSelectedQRCodeData] = useState(null);
+  // const [excelData, setExcelData] = useState([]);
+  // const [qrCodeData, setQRCodeData] = useState([]);
+  // const [uniqueIds, setUniqueIds] = useState([]);
+  // const [excelError, setExcelError] = useState("");
+  // const [showModal, setShowModal] = useState(false);
+  // const [selectedRow, setSelectedRow] = useState(null);
+  // const [selectedQRCodeData, setSelectedQRCodeData] = useState(null);
+
+  // Reference to the anchor element
 
   const openModal = () => {
     setShowModal(true);
@@ -66,6 +85,12 @@ const QrGenerator = () => {
 
   const closeModal = () => {
     setShowModal(false);
+  };
+
+  const downloadQRCode = (qrCodeElement, filename) => {
+    domtoimage.toBlob(qrCodeElement).then(function (blob) {
+      saveAs(blob, filename);
+    });
   };
 
   const file_type = [
@@ -195,12 +220,9 @@ const QrGenerator = () => {
     });
   };
 
-  useEffect(() => {
-    // Check if selectedRow is not null and excelData is available
-    if (selectedRow !== null && excelData.length > 0) {
-      renderChart();
-    }
-  }, [selectedRow, excelData]);
+
+  
+  
 
   return (
     <section id="qrfinder" className="py-5">
@@ -385,7 +407,16 @@ const QrGenerator = () => {
                       View Certificates
                     </Button>
 
-                    <Button className="mt-2" variant="success">
+                    <Button
+                      className="mt-2"
+                      variant="success"
+                      onClick={() => {
+                        const qrCodeElement = document.getElementById(
+                          `qr-code-${index}`
+                        );
+                        console.log("qrCodeElement:", qrCodeElement);
+                      }}
+                    >
                       Download
                     </Button>
                   </Card.Body>
