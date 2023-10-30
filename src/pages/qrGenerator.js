@@ -97,6 +97,29 @@ const QrGenerator = () => {
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     "application/vnd.ms-excel",
   ];
+  function mergeTables(table1, table2) {
+    const mergedData = {};
+  
+    for (const row of table1) {
+      const key = row.__EMPTY_3;
+      mergedData[key] = { ...row };
+    }
+  
+    for (const row of table2) {
+      const key = row["LF UNIT NO"];
+      if (mergedData[key]) {
+        Object.assign(mergedData[key], row);
+      } else {
+        mergedData[key] = { ...row };
+      }
+    }
+  
+    // Update the excelData state with the merged data
+    setExcelData(Object.values(mergedData));
+  
+    return mergedData;
+  }
+
   const handleChange = (e) => {
     const selected_file = e.target.files[0];
     if (selected_file) {
@@ -107,13 +130,17 @@ const QrGenerator = () => {
           const sheet = workbook.SheetNames;
           if (sheet.length) {
             const data = utils.sheet_to_json(workbook.Sheets[sheet[0]]);
-            setExcelData(data);
+            const data1 = utils.sheet_to_json(workbook.Sheets[sheet[1]]);
+            // const mergedJSON = mergeTables(data, data1);
+            // const mergedJSONString = JSON.stringify(mergedJSON, null, 2);
+            // console.log(mergedJSONString);
+            mergeTables(data, data1);
           }
         };
         reader.readAsArrayBuffer(selected_file);
       } else {
-        setExcelError("please upload only excel file");
-        setExcelData([]);
+        setExcelError("Please upload only an Excel file");
+        setExcelData([]); // Clear the excelData
       }
     }
   };
@@ -273,97 +300,227 @@ const QrGenerator = () => {
                 <Modal.Title>View Excel Data</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                <div className="table-container">
+              <div className="table-container">
                   <table className="custom-table">
-                    <table className="custom-table">
-                      <thead>
-                        <tr>
-                          <th>Ref_No</th>
-                          <th>Farmers_Name</th>
-                          <th>Registration_No</th>
-                          <th>LF_UNIT_NO</th>
-                          <th>Unit_Established_Date</th>
-                          <th>Farmers_Name</th>
-                          <th>GPS</th>
-                          <th>Species</th>
-                          <th>PB_Accumilation/Grms(1-years)</th>
-                          <th>
-                            Dynamic Carbon Capturing, Grams of C (1-years)
-                          </th>
-                          <th>O2_Production/Liters (1-years)</th>
-                          <th>H2O_Production/Liters (1-years)</th>
-                          <th>PB_Accumilation/Grms(2-years)</th>
-                          <th>
-                            Dynamic Carbon Capturing, Grams of C (2-years)
-                          </th>
-                          <th>O2_Production/Liters (2-years)</th>
-                          <th>H2O_Production/Liters (2-years)</th>
-                          <th>PB_Accumilation/Grms(3-years)</th>
-                          <th>
-                            Dynamic Carbon Capturing, Grams of C (3-years)
-                          </th>
-                          <th>O2_Production/Liters (3-years)</th>
-                          <th>H2O_Production/Liters (3-years)</th>
-                          <th>PB_Accumilation/Grms(4-years)</th>
-                          <th>
-                            Dynamic Carbon Capturing, Grams of C (4-years)
-                          </th>
-                          <th>O2_Production/Liters (4-years)</th>
-                          <th>H2O_Production/Liters (4-years)</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {excelData.length ? (
-                          excelData.map((info) => (
-                            <tr>
-                              <td>{info.Ref_No}</td>
-                              <td>{info.Name}</td>
-                              <td>{info.Registration_No}</td>
-                              <td>{info.LF_UNIT_NO}</td>
-                              <td>{info.Unit_Established_Date}</td>
-                              <td>{info.GPS}</td>
-                              <td>{info.Species}</td>
-                              <td>{info.PB_Accumilation_Grms_1_years}</td>
-                              <td>
-                                {
-                                  info.Dynamic_Carbon_Capturing_Grams_of_C_1_years
-                                }
-                              </td>
-                              <td>{info.O2_Production_Liters_1_years}</td>
-                              <td>{info.H2O_Production_Liters_1_years}</td>
-                              <td>{info.PB_Accumilation_Grms_2_years}</td>
-                              <td>
-                                {
-                                  info.Dynamic_Carbon_Capturing_Grams_of_C_2_years
-                                }
-                              </td>
-                              <td>{info.O2_Production_Liters_2_years}</td>
-                              <td>{info.H2O_Production_Liters_2_years}</td>
-                              <td>{info.PB_Accumilation_Grms_3_years}</td>
-                              <td>
-                                {
-                                  info.Dynamic_Carbon_Capturing_Grams_of_C_3_years
-                                }
-                              </td>
-                              <td>{info.O2_Production_Liters_3_years}</td>
-                              <td>{info.H2O_Production_Liters_3_years}</td>
-                              <td>{info.PB_Accumilation_Grms_4_years}</td>
-                              <td>
-                                {
-                                  info.Dynamic_Carbon_Capturing_Grams_of_C_4_years
-                                }
-                              </td>
-                              <td>{info.O2_Production_Liters_4_years}</td>
-                              <td>{info.H2O_Production_Liters_4_years}</td>
-                            </tr>
-                          ))
-                        ) : excelError.length ? (
-                          <tr>{excelError}</tr>
-                        ) : (
-                          <tr>No user data is present</tr>
-                        )}
-                      </tbody>
-                    </table>
+                    <thead>
+                      <tr>
+                        <th>Ref_No</th>
+                        <th>Farmers_Name</th>
+                        <th>Registration_No</th>
+                        <th>LF_UNIT_NO</th>
+                        <th>Inestors_Details</th>
+                        <th>Unit_Established_Date</th>
+                        <th>GPS</th>
+                        <th>Species</th>
+                        <th>PB_Accumilation/Grms(1-years)</th>
+                        <th>Dynamic Carbon Capturing, Grams of C (1-years)</th>
+                        <th>O2_Production/Liters (1-years)</th>
+                        <th>H2O_Production/Liters (1-years)</th>
+                        <th>PB_Accumilation/Grms(2-years)</th>
+                        <th>Dynamic Carbon Capturing, Grams of C (2-years)</th>
+                        <th>O2_Production/Liters (2-years)</th>
+                        <th>H2O_Production/Liters (2-years)</th>
+                        <th>PB_Accumilation/Grms(3-years)</th>
+                        <th>Dynamic Carbon Capturing, Grams of C (3-years)</th>
+                        <th>O2_Production/Liters (3-years)</th>
+                        <th>H2O_Production/Liters (3-years)</th>
+                        <th>PB_Accumilation/Grms(4-years)</th>
+                        <th>Dynamic Carbon Capturing, Grams of C (4-years)</th>
+                        <th>O2_Production/Liters (4-years)</th>
+                        <th>H2O_Production/Liters (4-years)</th>
+                        <th>PB_Accumilation/Grms(Summery)</th>
+                        <th>Dynamic Carbon Capturing, Grams of C (Summery)</th>
+                        <th>O2_Production/Liters (Summery)</th>
+                        <th>H2O_Production/Liters (Summery)</th>
+                        {/* <th>Farmers Name</th> */}
+                        <th>F.NO</th>
+                        {/* <th>LF UNIT NO</th> */}
+                        <th>Inestors Details</th>
+                        <th>No of plants/Units</th>
+                        <th>Unit Established Date</th>
+                        <th>Species</th>
+                        <th>performance  of plants/Units as at date 2019/Feb</th>
+                        <th>Payment</th>
+                        <th>performance  of plants/Units as at date 2020/Feb</th>
+                        <th>Payment</th>
+                        <th>performance  of plants/Units as at date 2021/Feb</th>
+                        <th>Payment Ammount,$</th>
+                        <th>In SL Rupies</th>
+                        <th>performance  of plants/Units as at date 2022/Feb</th>
+                        <th>Payment exchange $</th>
+                        <th>In SL Rupies</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {excelData.length ? (
+                        Object.values(excelData).slice(2).map((info, index) => (
+                          <tr key={index}>
+                            <td>
+                              {
+                                info.__EMPTY //Ref_No
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_1 //Name
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_2 //Registration_No
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_3 //LF_UNIT_NO
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_4 //Inestors_Details
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_5 //Unit_Established_Date
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_6 //GPS
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_7 //Species
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_8 //['C-PES Calculations']
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_9 //Dynamic Carbon Capturing
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_10 //O2_Production_Liters_1_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_11 //H2O_Production_Liters_1_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_12 //PB_Accumilation_Grms_2_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_13 //Dynamic_Carbon_Capturing_Grams_of_C_2_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_14 //O2_Production_Liters_2_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_15 //H2O_Production_Liters_2_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_16 //PB_Accumilation_Grms_3_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_17 //Dynamic_Carbon_Capturing_Grams_of_C_3_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_18 //O2_Production_Liters_3_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_19 //H2O_Production_Liters_3_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_20 //PB_Accumilation_Grms_4_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_21 //Dynamic_Carbon_Capturing_Grams_of_C_4_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_22 //O2_Production_Liters_4_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_23 //H2O_Production_Liters_4_years
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_24 //PB_Accumilation_Grms_Summery
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_25 //Dynamic_Carbon_Capturing_Grams_of_C_Summery
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_26 //O2_Production_Liters_Summery
+                              }
+                            </td>
+                            <td>
+                              {
+                                info.__EMPTY_27 //H2O_Production_Liters_Summery
+                              }
+                            </td>
+                            {/* <td>{info["Farmers Name "]}</td> */}
+                            <td>{info["F.NO"]}</td>
+                            {/* <td>{info["LF UNIT NO"]}</td> */}
+                            <td>{info["Inestors Details"]}</td>
+                            <td>{info["No of plants/Units "]}</td>
+                            <td>{info["Unit Established  Date "]}</td>
+                            <td>{info[" Species"]}</td>
+                            <td>{info["performance  of plants/Units as at date 2019/Feb "]}</td>
+                            <td>{info["Payment "]}</td>
+                            <td>{info["performance  of plants/Units as at date 2020/Feb "]}</td>
+                            <td>{info["Payment _1"]}</td>
+                            <td>{info["performance  of plants/Units as at date 2021/Feb "]}</td>
+                            <td>{info["Payment Ammount,$"]}</td>
+                            <td>{info["In SL Rupies"]}</td>
+                            <td>{info["performance  of plants/Units as at date 2022/Feb "]}</td>
+                            <td>{info["Payment exchange $"]}</td>
+                            <td>{info["In SL Rupies_1"]}</td>
+
+                          </tr>
+                        ))
+                      ) : excelError.length ? (
+                        <tr>{excelError}</tr>
+                      ) : (
+                        <tr>No user data is present</tr>
+                      )}
+                    </tbody>
                   </table>
                 </div>
               </Modal.Body>
