@@ -44,8 +44,6 @@ const QrGenerator = () => {
     return <Navigate to="/unAuth" />;
   }
 
-  
-
   const handleLogout = () => {
     localStorage.removeItem("rememberedUsername");
     localStorage.removeItem("rememberedPassword");
@@ -99,12 +97,12 @@ const QrGenerator = () => {
   ];
   function mergeTables(table1, table2) {
     const mergedData = {};
-  
+
     for (const row of table1) {
       const key = row.__EMPTY_3;
       mergedData[key] = { ...row };
     }
-  
+
     for (const row of table2) {
       const key = row["LF UNIT NO"];
       if (mergedData[key]) {
@@ -113,10 +111,10 @@ const QrGenerator = () => {
         mergedData[key] = { ...row };
       }
     }
-  
+
     // Update the excelData state with the merged data
     setExcelData(Object.values(mergedData));
-  
+
     return mergedData;
   }
 
@@ -146,22 +144,137 @@ const QrGenerator = () => {
   };
 
   const generateQRCodeData = () => {
-    const qrCodes = excelData.map((info, index) => {
-      // Generate a unique identifier for each row (e.g., timestamp)
-      const uniqueId = Date.now() + index; // You can customize this logic
+    // const qrCodes = excelData.map((info, index) => {
+    const qrCodes = Object.values(excelData)
+      .slice(2)
+      .map((info, index) => {
+        // Generate a unique identifier for each row (e.g., timestamp)
+        console.log(info, "this is from qr code");
+        const uniqueId = Date.now() + index; // You can customize this logic
 
-      // Customize the data you want to encode in the QR code
-      const dataToEncode = `${info.Ref_No}, ${info.Name}, ...`; // Customize as needed
+        // Customize the data you want to encode in the QR code
+        const dataToEncode = `
+        Name:${
+          info.__EMPTY_1 //Name
+        }
+        Registration_No:${
+          info.__EMPTY_2 //Registration_No
+        }
+        LF_UNIT_NO:${
+          info.__EMPTY_3 //LF_UNIT_NO
+        }
+        Inestors_Details:${
+          info.__EMPTY_4 //Inestors_Details
+        }
+        Unit_Established_Date:${
+          info.__EMPTY_5 //Unit_Established_Date
+        }
+        GPS:${
+          info.__EMPTY_6 //GPS
+        }
+        Species:${
+          info.__EMPTY_7 //Species
+        }
+        C-PES Calculations:${
+          info.__EMPTY_8 //['C-PES Calculations']
+        }
+        Dynamic Carbon Capturing:${
+          info.__EMPTY_9 //Dynamic Carbon Capturing
+        }
+        O2_Production_Liters_1_years:${
+          info.__EMPTY_10 //O2_Production_Liters_1_years
+        }
+        H2O_Production_Liters_1_years:${
+          info.__EMPTY_11 //H2O_Production_Liters_1_years
+        }
+        PB_Accumilation_Grms_2_years:${
+          info.__EMPTY_12 //PB_Accumilation_Grms_2_years
+        }
+        Dynamic_Carbon_Capturing_Grams_of_C_2_years:${
+          info.__EMPTY_13 //Dynamic_Carbon_Capturing_Grams_of_C_2_years
+        }
+        O2_Production_Liters_2_years:${
+          info.__EMPTY_14 //O2_Production_Liters_2_years
+        }
+        H2O_Production_Liters_2_years:${
+          info.__EMPTY_15 //H2O_Production_Liters_2_years
+        }
+        PB_Accumilation_Grms_3_years:${
+          info.__EMPTY_16 //PB_Accumilation_Grms_3_years
+        }
+        Dynamic_Carbon_Capturing_Grams_of_C_3_years:${
+          info.__EMPTY_17 //Dynamic_Carbon_Capturing_Grams_of_C_3_years
+        }
+        O2_Production_Liters_3_years:${
+          info.__EMPTY_18 //O2_Production_Liters_3_years
+        }
+        H2O_Production_Liters_3_years:${
+          info.__EMPTY_19 //H2O_Production_Liters_3_years
+        }
+        PB_Accumilation_Grms_4_years:${
+          info.__EMPTY_20 //PB_Accumilation_Grms_4_years
+        }
+        Dynamic_Carbon_Capturing_Grams_of_C_4_years:${
+          info.__EMPTY_21 //Dynamic_Carbon_Capturing_Grams_of_C_4_years
+        }
+        O2_Production_Liters_4_years:${
+          info.__EMPTY_22 //O2_Production_Liters_4_years
+        }
+        H2O_Production_Liters_4_years:${
+          info.__EMPTY_23 //H2O_Production_Liters_4_years
+        }
+        PB_Accumilation_Grms_Summery:${
+          info.__EMPTY_24 //PB_Accumilation_Grms_Summery
+        }
+        Dynamic_Carbon_Capturing_Grams_of_C_Summery:${
+          info.__EMPTY_25 //Dynamic_Carbon_Capturing_Grams_of_C_Summery
+        }
+        O2_Production_Liters_Summery:${
+          info.__EMPTY_26 //O2_Production_Liters_Summery
+        }
+        H2O_Production_Liters_Summery:${
+          info.__EMPTY_27 //H2O_Production_Liters_Summery
+        }
+        Farmers Name:${info["Farmers Name "]} F.NO:${info["F.NO"]} LF UNIT NO:${
+          info["LF UNIT NO"]
+        } Inestors Details:${info["Inestors Details"]} No of plants/Units:${
+          info["No of plants/Units "]
+        } Uit Established  Date:${info["Uit Established  Date "]} Species:${
+          info[" Species"]
+        } performance  of plants/Units as at date 2019/Feb:${
+          info["performance  of plants/Units as at date 2019/Feb "]
+        }
+        Payment:${
+          info["Payment "]
+        } performance  of plants/Units as at date 2020/Feb:${
+          info["performance  of plants/Units as at date 2020/Feb "]
+        }
+        Payment _1:${
+          info["Payment _1"]
+        } performance  of plants/Units as at date 2021/Feb:${
+          info["performance  of plants/Units as at date 2021/Feb "]
+        }
+        Payment Ammount,$:${info["Payment Ammount,$"]} In SL Rupies:${
+          info["In SL Rupies"]
+        } performance  of plants/Units as at date 2022/Feb:${
+          info["performance  of plants/Units as at date 2022/Feb "]
+        }
+        Payment exchange $:${info["Payment exchange $"]} In SL Rupies_1:${
+          info["In SL Rupies_1"]
+        }`;
+        // Customize as needed
 
-      // Store the unique identifier in the state
-      setUniqueIds((prevIds) => [...prevIds, uniqueId]);
+        // console.log(dataToEncode, "This is the data to encode");
 
-      return (
-        <div key={uniqueId}>
-          <QRCode value={dataToEncode} />
-        </div>
-      );
-    });
+        // Store the unique identifier in the state
+        setUniqueIds((prevIds) => [...prevIds, uniqueId]);
+
+        return (
+          <div key={uniqueId}>
+            <QRCode value={dataToEncode} />
+          </div>
+        );
+      });
 
     setQRCodeData(qrCodes);
     setUniqueIds([...Array(excelData.length).keys()]);
@@ -247,10 +360,7 @@ const QrGenerator = () => {
     });
   };
 
-
-  
-  
-
+  // excelData && console.log(excelData, "this is the excell data");
   return (
     <section id="qrfinder" className="py-5">
       <div className="container">
@@ -300,7 +410,7 @@ const QrGenerator = () => {
                 <Modal.Title>View Excel Data</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-              <div className="table-container">
+                <div className="table-container">
                   <table className="custom-table">
                     <thead>
                       <tr>
@@ -339,182 +449,210 @@ const QrGenerator = () => {
                         <th>No of plants/Units</th>
                         <th>Unit Established Date</th>
                         <th>Species</th>
-                        <th>performance  of plants/Units as at date 2019/Feb</th>
+                        <th>performance of plants/Units as at date 2019/Feb</th>
                         <th>Payment</th>
-                        <th>performance  of plants/Units as at date 2020/Feb</th>
+                        <th>performance of plants/Units as at date 2020/Feb</th>
                         <th>Payment</th>
-                        <th>performance  of plants/Units as at date 2021/Feb</th>
+                        <th>performance of plants/Units as at date 2021/Feb</th>
                         <th>Payment Ammount,$</th>
                         <th>In SL Rupies</th>
-                        <th>performance  of plants/Units as at date 2022/Feb</th>
+                        <th>performance of plants/Units as at date 2022/Feb</th>
                         <th>Payment exchange $</th>
                         <th>In SL Rupies</th>
                       </tr>
                     </thead>
                     <tbody>
                       {excelData.length ? (
-                        Object.values(excelData).slice(2).map((info, index) => (
-                          <tr key={index}>
-                            <td>
-                              {
-                                info.__EMPTY //Ref_No
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_1 //Name
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_2 //Registration_No
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_3 //LF_UNIT_NO
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_4 //Inestors_Details
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_5 //Unit_Established_Date
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_6 //GPS
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_7 //Species
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_8 //['C-PES Calculations']
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_9 //Dynamic Carbon Capturing
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_10 //O2_Production_Liters_1_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_11 //H2O_Production_Liters_1_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_12 //PB_Accumilation_Grms_2_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_13 //Dynamic_Carbon_Capturing_Grams_of_C_2_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_14 //O2_Production_Liters_2_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_15 //H2O_Production_Liters_2_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_16 //PB_Accumilation_Grms_3_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_17 //Dynamic_Carbon_Capturing_Grams_of_C_3_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_18 //O2_Production_Liters_3_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_19 //H2O_Production_Liters_3_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_20 //PB_Accumilation_Grms_4_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_21 //Dynamic_Carbon_Capturing_Grams_of_C_4_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_22 //O2_Production_Liters_4_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_23 //H2O_Production_Liters_4_years
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_24 //PB_Accumilation_Grms_Summery
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_25 //Dynamic_Carbon_Capturing_Grams_of_C_Summery
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_26 //O2_Production_Liters_Summery
-                              }
-                            </td>
-                            <td>
-                              {
-                                info.__EMPTY_27 //H2O_Production_Liters_Summery
-                              }
-                            </td>
-                            {/* <td>{info["Farmers Name "]}</td> */}
-                            <td>{info["F.NO"]}</td>
-                            {/* <td>{info["LF UNIT NO"]}</td> */}
-                            <td>{info["Inestors Details"]}</td>
-                            <td>{info["No of plants/Units "]}</td>
-                            <td>{info["Unit Established  Date "]}</td>
-                            <td>{info[" Species"]}</td>
-                            <td>{info["performance  of plants/Units as at date 2019/Feb "]}</td>
-                            <td>{info["Payment "]}</td>
-                            <td>{info["performance  of plants/Units as at date 2020/Feb "]}</td>
-                            <td>{info["Payment _1"]}</td>
-                            <td>{info["performance  of plants/Units as at date 2021/Feb "]}</td>
-                            <td>{info["Payment Ammount,$"]}</td>
-                            <td>{info["In SL Rupies"]}</td>
-                            <td>{info["performance  of plants/Units as at date 2022/Feb "]}</td>
-                            <td>{info["Payment exchange $"]}</td>
-                            <td>{info["In SL Rupies_1"]}</td>
-
-                          </tr>
-                        ))
+                        Object.values(excelData)
+                          .slice(2)
+                          .map((info, index) => {
+                            // console.log(info);
+                            return (
+                              <tr key={index}>
+                                <td>
+                                  {
+                                    info.__EMPTY //Ref_No
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_1 //Name
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_2 //Registration_No
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_3 //LF_UNIT_NO
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_4 //Inestors_Details
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_5 //Unit_Established_Date
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_6 //GPS
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_7 //Species
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_8 //['C-PES Calculations']
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_9 //Dynamic Carbon Capturing
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_10 //O2_Production_Liters_1_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_11 //H2O_Production_Liters_1_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_12 //PB_Accumilation_Grms_2_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_13 //Dynamic_Carbon_Capturing_Grams_of_C_2_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_14 //O2_Production_Liters_2_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_15 //H2O_Production_Liters_2_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_16 //PB_Accumilation_Grms_3_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_17 //Dynamic_Carbon_Capturing_Grams_of_C_3_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_18 //O2_Production_Liters_3_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_19 //H2O_Production_Liters_3_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_20 //PB_Accumilation_Grms_4_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_21 //Dynamic_Carbon_Capturing_Grams_of_C_4_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_22 //O2_Production_Liters_4_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_23 //H2O_Production_Liters_4_years
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_24 //PB_Accumilation_Grms_Summery
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_25 //Dynamic_Carbon_Capturing_Grams_of_C_Summery
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_26 //O2_Production_Liters_Summery
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    info.__EMPTY_27 //H2O_Production_Liters_Summery
+                                  }
+                                </td>
+                                {/* <td>{info["Farmers Name "]}</td> */}
+                                <td>{info["F.NO"]}</td>
+                                {/* <td>{info["LF UNIT NO"]}</td> */}
+                                <td>{info["Inestors Details"]}</td>
+                                <td>{info["No of plants/Units "]}</td>
+                                <td>{info["Unit Established  Date "]}</td>
+                                <td>{info[" Species"]}</td>
+                                <td>
+                                  {
+                                    info[
+                                      "performance  of plants/Units as at date 2019/Feb "
+                                    ]
+                                  }
+                                </td>
+                                <td>{info["Payment "]}</td>
+                                <td>
+                                  {
+                                    info[
+                                      "performance  of plants/Units as at date 2020/Feb "
+                                    ]
+                                  }
+                                </td>
+                                <td>{info["Payment _1"]}</td>
+                                <td>
+                                  {
+                                    info[
+                                      "performance  of plants/Units as at date 2021/Feb "
+                                    ]
+                                  }
+                                </td>
+                                <td>{info["Payment Ammount,$"]}</td>
+                                <td>{info["In SL Rupies"]}</td>
+                                <td>
+                                  {
+                                    info[
+                                      "performance  of plants/Units as at date 2022/Feb "
+                                    ]
+                                  }
+                                </td>
+                                <td>{info["Payment exchange $"]}</td>
+                                <td>{info["In SL Rupies_1"]}</td>
+                              </tr>
+                            );
+                          })
                       ) : excelError.length ? (
                         <tr>{excelError}</tr>
                       ) : (
