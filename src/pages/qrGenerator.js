@@ -10,6 +10,9 @@ import logo from "../assets/logo.png";
 import { Modal, Button as ModalButton } from "react-bootstrap";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+
+import axios from "axios";
+import * as XLSX from "xlsx";
 import {
   faUpload,
   faEye,
@@ -360,6 +363,22 @@ const QrGenerator = () => {
     });
   };
 
+  const handleDownload = async () => {
+    if (downloadLinkRef.current) {
+      const value = downloadLinkRef.current.value;
+      console.log(value);
+      const response = await axios.get(value, { responseType: "arraybuffer" });
+      const data = new Uint8Array(response.data);
+      const workbook = XLSX.read(data, { type: "array" });
+      console.log(workbook);
+      const sheet = workbook.SheetNames;
+      const test = utils.sheet_to_json(workbook.Sheets[sheet[0]]);
+      console.log(workbook);
+      console.log(test);
+      setExcelData(test);
+    }
+  };
+
   // excelData && console.log(excelData, "this is the excell data");
   return (
     <section id="qrfinder" className="py-5">
@@ -386,6 +405,9 @@ const QrGenerator = () => {
               <input
                 className="form-control"
                 placeholder="Enter Excel Sheet URL"
+                type="text"
+                ref={downloadLinkRef}
+                onChange={handleDownload}
               ></input>
             </p>
             <br />
