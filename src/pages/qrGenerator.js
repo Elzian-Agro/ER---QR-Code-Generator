@@ -90,7 +90,6 @@ const QrGenerator = () => {
       console.error("QR code element not found.");
     }
   };
-  
 
   const file_type = [
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -107,7 +106,7 @@ const QrGenerator = () => {
           const sheet = workbook.SheetNames;
           if (sheet.length) {
             const sheetData = utils.sheet_to_json(workbook.Sheets[sheet[0]]);
-            
+
             setExcelData(sheetData);
           }
         };
@@ -120,13 +119,12 @@ const QrGenerator = () => {
   };
 
   const generateQRCodeData = () => {
-    const qrCodes = Object.values(excelData)
-      .map((info,index) => {
-        // Generate a unique identifier for each row (e.g., timestamp)
-        const uniqueId = Date.now()+ index;; // You can customize this logic
+    const qrCodes = Object.values(excelData).map((info, index) => {
+      // Generate a unique identifier for each row (e.g., timestamp)
+      const uniqueId = Date.now() + index; // You can customize this logic
 
-        // Customize the data you want to encode in the QR code
-        const dataToEncode = `
+      // Customize the data you want to encode in the QR code
+      const dataToEncode = `
         ${info["Farmers Name "] || info["B"]}
         ${info["Registration No"] || info["C"]}
         ${info["LF UNIT NO"] || info["D"]}
@@ -139,34 +137,38 @@ const QrGenerator = () => {
         ${info["O2 Production/Liters(summery)"] || info["AA"]}
         ${info["H2O Production/Liters(summery)"] || info["AB"]}
         ${
-          info["performance  of plants/Units as at date 2019/Feb "] || info["AD"]
+          info["performance  of plants/Units as at date 2019/Feb "] ||
+          info["AD"]
         }
         ${info["Payment "] || info["AE"]} 
         ${
-          info["performance  of plants/Units as at date 2020/Feb "] || info["AF"]
+          info["performance  of plants/Units as at date 2020/Feb "] ||
+          info["AF"]
         }
         ${info["Payment _1"] || info["AG"]} 
         ${
-          info["performance  of plants/Units as at date 2021/Feb "] || info["AH"]
+          info["performance  of plants/Units as at date 2021/Feb "] ||
+          info["AH"]
         }
         ${info["Payment Ammount,$"] || info["AI"]} 
         ${info["In SL Rupies"] || info["AJ"]} 
         ${
-          info["performance  of plants/Units as at date 2022/Feb "] || info["AK"]
+          info["performance  of plants/Units as at date 2022/Feb "] ||
+          info["AK"]
         }
         ${info["Payment exchange $"] || info["AL"]} 
         ${info["In SL Rupies_1"] || info["AM"]}`;
-        // Customize as needed
+      // Customize as needed
 
-        // Store the unique identifier in the state
-        setUniqueIds((prevIds) => [...prevIds, uniqueId]);
+      // Store the unique identifier in the state
+      setUniqueIds((prevIds) => [...prevIds, uniqueId]);
 
-        return (
-          <div key={uniqueId}>
-            <QRCode value={dataToEncode} />
-          </div>
-        );
-      });
+      return (
+        <div key={uniqueId}>
+          <QRCode value={dataToEncode} />
+        </div>
+      );
+    });
 
     setQRCodeData(qrCodes);
     setUniqueIds([...Array(excelData.length).keys()]);
@@ -258,17 +260,17 @@ const QrGenerator = () => {
       const urlData = new Uint8Array(response.data);
       const workbook = XLSX.read(urlData, { type: "array" });
       const sheetNames = workbook.SheetNames;
-      const page1 = XLSX.utils.sheet_to_json(workbook.Sheets[sheetNames[0]]).slice(1, 11);
+      const page1 = XLSX.utils
+        .sheet_to_json(workbook.Sheets[sheetNames[0]])
+        .slice(1, 11);
       // Update the state with the fetched data
       setExcelData(page1);
       setExcelError("");
-
     } catch (error) {
       setExcelData([]);
       setExcelError("Error fetching data from URL");
     }
   };
-  
 
   const handleDownload = async () => {
     const url = downloadLinkRef.current.value;
@@ -276,7 +278,6 @@ const QrGenerator = () => {
       fetchExcelDataFromURL(url);
     }
   };
-
 
   return (
     <section id="qrfinder" className="py-5">
@@ -377,53 +378,138 @@ const QrGenerator = () => {
                     </thead>
                     <tbody>
                       {excelData.length ? (
-                        Object.values(excelData)
-                          .map((info) => {
-                            return (
-                              <tr key={info}>
-                                <td>{info["Ref No"] || info["A"]}</td>
-                                <td>{info["Farmers Name "] || info["B"]}</td>
-                                <td>{info["Registration No"] || info["C"]}</td>
-                                <td>{info["LF UNIT NO"] || info["D"]}</td>
-                                <td>{info["Inestors Details"] || info["E"]}</td>
-                                <td>{info["Unit Established  Date "] || info["F"]}</td>
-                                <td>{info["GPS"] || info["G"]}</td>
-                                <td>{info[" Species"] || info["H"]}</td>
-                                <td>{info["PB Accumilation/Grms(Year1)"] || info["I"]}</td>
-                                <td>{info["Dynamic Carbon Capturing, Grams of C(Year1)"] || info["J"]}</td>
-                                <td>{info["O2 Production/Liters(Year1)"] || info["K"]}</td>
-                                <td>{info["H2O Production/Liters(Year1)"] || info["L"]}</td>
-                                <td>{info["PB Accumilation/Grms(Year2)"] || info["M"]}</td>
-                                <td>{info["Dynamic Carbon Capturing, Grams of C(Year2)"] || info["N"]}</td>
-                                <td>{info["O2 Production/Liters(Year2)"] || info["O"]}</td>
-                                <td>{info["H2O Production/Liters(Year2)"] || info["P"]}</td>
-                                <td>{info["PB Accumilation/Grms(Year3)"] || info["Q"]}</td>
-                                <td>{info["Dynamic Carbon Capturing, Grams of C(Year3)"] || info["R"]}</td>
-                                <td>{info["O2 Production/Liters(Year3)"] || info["S"]}</td>
-                                <td>{info["H2O Production/Liters(Year3)"] || info["T"]}</td>
-                                <td>{info["PB Accumilation/Grms(Year4)"] || info["U"]}</td>
-                                <td>{info["Dynamic Carbon Capturing, Grams of C(Year4)"] || info["V"]}</td>
-                                <td>{info["O2 Production/Liters(Year4)"] || info["W"]}</td>
-                                <td>{info["H2O Production/Liters(Year4)"] || info["X"]}</td>
-                                <td>{info["PB Accumilation/Grms(summery)"] || info["Y"]}</td>
-                                <td>{info["Dynamic Carbon Capturing, Grams of C(summery)"] || info["Z"]}</td>
-                                <td>{info["O2 Production/Liters(summery)"] || info["AA"]}</td>
-                                <td>{info["H2O Production/Liters(summery)"] || info["AB"]}</td>
-                                <td>{info["No of plants/Units "] || info["AC"]}</td>
-                                <td>{info["performance  of plants/Units as at date 2019/Feb "] || info["AD"]}</td>
-                                <td>{info["Payment "] || info["AE"]}</td>
-                                <td>{info["performance  of plants/Units as at date 2020/Feb "] || info["AF"]}</td>
-                                <td>{info["Payment _1"] || info["AG"]}</td>
-                                <td>{info["performance  of plants/Units as at date 2021/Feb "] || info["AH"]}</td>
-                                <td>{info["Payment Ammount,$"] || info["AI"]}</td>
-                                <td>{info["In SL Rupies"] || info["AJ"]}</td>
-                                <td>{info["performance  of plants/Units as at date 2022/Feb "] || info["AK"]}</td>
-                                <td>{info["Payment exchange $"] || info["AL"]}</td>
-                                <td>{info["In SL Rupies_1"] || info["AM"]}</td>
-
-                              </tr>
-                            );
-                          })
+                        Object.values(excelData).map((info) => {
+                          return (
+                            <tr key={info}>
+                              <td>{info["Ref No"] || info["A"]}</td>
+                              <td>{info["Farmers Name "] || info["B"]}</td>
+                              <td>{info["Registration No"] || info["C"]}</td>
+                              <td>{info["LF UNIT NO"] || info["D"]}</td>
+                              <td>{info["Inestors Details"] || info["E"]}</td>
+                              <td>
+                                {info["Unit Established  Date "] || info["F"]}
+                              </td>
+                              <td>{info["GPS"] || info["G"]}</td>
+                              <td>{info[" Species"] || info["H"]}</td>
+                              <td>
+                                {info["PB Accumilation/Grms(Year1)"] ||
+                                  info["I"]}
+                              </td>
+                              <td>
+                                {info[
+                                  "Dynamic Carbon Capturing, Grams of C(Year1)"
+                                ] || info["J"]}
+                              </td>
+                              <td>
+                                {info["O2 Production/Liters(Year1)"] ||
+                                  info["K"]}
+                              </td>
+                              <td>
+                                {info["H2O Production/Liters(Year1)"] ||
+                                  info["L"]}
+                              </td>
+                              <td>
+                                {info["PB Accumilation/Grms(Year2)"] ||
+                                  info["M"]}
+                              </td>
+                              <td>
+                                {info[
+                                  "Dynamic Carbon Capturing, Grams of C(Year2)"
+                                ] || info["N"]}
+                              </td>
+                              <td>
+                                {info["O2 Production/Liters(Year2)"] ||
+                                  info["O"]}
+                              </td>
+                              <td>
+                                {info["H2O Production/Liters(Year2)"] ||
+                                  info["P"]}
+                              </td>
+                              <td>
+                                {info["PB Accumilation/Grms(Year3)"] ||
+                                  info["Q"]}
+                              </td>
+                              <td>
+                                {info[
+                                  "Dynamic Carbon Capturing, Grams of C(Year3)"
+                                ] || info["R"]}
+                              </td>
+                              <td>
+                                {info["O2 Production/Liters(Year3)"] ||
+                                  info["S"]}
+                              </td>
+                              <td>
+                                {info["H2O Production/Liters(Year3)"] ||
+                                  info["T"]}
+                              </td>
+                              <td>
+                                {info["PB Accumilation/Grms(Year4)"] ||
+                                  info["U"]}
+                              </td>
+                              <td>
+                                {info[
+                                  "Dynamic Carbon Capturing, Grams of C(Year4)"
+                                ] || info["V"]}
+                              </td>
+                              <td>
+                                {info["O2 Production/Liters(Year4)"] ||
+                                  info["W"]}
+                              </td>
+                              <td>
+                                {info["H2O Production/Liters(Year4)"] ||
+                                  info["X"]}
+                              </td>
+                              <td>
+                                {info["PB Accumilation/Grms(summery)"] ||
+                                  info["Y"]}
+                              </td>
+                              <td>
+                                {info[
+                                  "Dynamic Carbon Capturing, Grams of C(summery)"
+                                ] || info["Z"]}
+                              </td>
+                              <td>
+                                {info["O2 Production/Liters(summery)"] ||
+                                  info["AA"]}
+                              </td>
+                              <td>
+                                {info["H2O Production/Liters(summery)"] ||
+                                  info["AB"]}
+                              </td>
+                              <td>
+                                {info["No of plants/Units "] || info["AC"]}
+                              </td>
+                              <td>
+                                {info[
+                                  "performance  of plants/Units as at date 2019/Feb "
+                                ] || info["AD"]}
+                              </td>
+                              <td>{info["Payment "] || info["AE"]}</td>
+                              <td>
+                                {info[
+                                  "performance  of plants/Units as at date 2020/Feb "
+                                ] || info["AF"]}
+                              </td>
+                              <td>{info["Payment _1"] || info["AG"]}</td>
+                              <td>
+                                {info[
+                                  "performance  of plants/Units as at date 2021/Feb "
+                                ] || info["AH"]}
+                              </td>
+                              <td>{info["Payment Ammount,$"] || info["AI"]}</td>
+                              <td>{info["In SL Rupies"] || info["AJ"]}</td>
+                              <td>
+                                {info[
+                                  "performance  of plants/Units as at date 2022/Feb "
+                                ] || info["AK"]}
+                              </td>
+                              <td>
+                                {info["Payment exchange $"] || info["AL"]}
+                              </td>
+                              <td>{info["In SL Rupies_1"] || info["AM"]}</td>
+                            </tr>
+                          );
+                        })
                       ) : excelError.length ? (
                         <tr>{excelError}</tr>
                       ) : (
@@ -458,12 +544,12 @@ const QrGenerator = () => {
             </h2>
             <hr />
             <div className="qr-code-list">
-            {qrCodeData.map((qrCode, index) => (
-              <div key={uniqueIds[index]} className="qr-code-item">
-                <Card>
-                  <Card.Body>
-                    {qrCode}
-                    {/* <Button
+              {qrCodeData.map((qrCode, index) => (
+                <div key={uniqueIds[index]}>
+                  <Card>
+                    <Card.Body>
+                      <div id={`qr-code-${index}`}>{qrCode}</div>
+                      {/* <Button
                       className="mt-2"
                       variant="primary"
                       onClick={() => {
@@ -473,20 +559,22 @@ const QrGenerator = () => {
                     >
                       View Certificates
                     </Button> */}
-                    <Button
-                      className="mt-2"
-                      variant="success"
-                      onClick={() => {
-                        const qrCodeElement = document.getElementById(`qr-code-${index}`);
-                        downloadQRCode(qrCodeElement, `QRCode_${index}.png`); // Provide a filename
-                      }}
-                    >
-                      Download
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </div>
-            ))}
+                      <Button
+                        className="mt-2"
+                        variant="success"
+                        onClick={() => {
+                          const qrCodeElement = document.getElementById(
+                            `qr-code-${index}`
+                          );
+                          downloadQRCode(qrCodeElement, `QRCode_${index}.png`); // Provide a filename
+                        }}
+                      >
+                        Download
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </div>
+              ))}
             </div>
           </div>
         )}
