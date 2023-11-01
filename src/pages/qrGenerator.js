@@ -70,14 +70,6 @@ const QrGenerator = () => {
     }
   };
 
-  // const [excelData, setExcelData] = useState([]);
-  // const [qrCodeData, setQRCodeData] = useState([]);
-  // const [uniqueIds, setUniqueIds] = useState([]);
-  // const [excelError, setExcelError] = useState("");
-  // const [showModal, setShowModal] = useState(false);
-  // const [selectedRow, setSelectedRow] = useState(null);
-  // const [selectedQRCodeData, setSelectedQRCodeData] = useState(null);
-
   // Reference to the anchor element
 
   const openModal = () => {
@@ -98,28 +90,6 @@ const QrGenerator = () => {
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     "application/vnd.ms-excel",
   ];
-  function mergeTables(table1, table2) {
-    const mergedData = {};
-
-    for (const row of table1) {
-      const key = row.__EMPTY_3;
-      mergedData[key] = { ...row };
-    }
-
-    for (const row of table2) {
-      const key = row["LF UNIT NO"];
-      if (mergedData[key]) {
-        Object.assign(mergedData[key], row);
-      } else {
-        mergedData[key] = { ...row };
-      }
-    }
-
-    // Update the excelData state with the merged data
-    setExcelData(Object.values(mergedData));
-
-    return mergedData;
-  }
 
   const handleChange = (e) => {
     const selected_file = e.target.files[0];
@@ -130,12 +100,9 @@ const QrGenerator = () => {
           const workbook = read(e.target.result);
           const sheet = workbook.SheetNames;
           if (sheet.length) {
-            const data = utils.sheet_to_json(workbook.Sheets[sheet[0]]);
-            const data1 = utils.sheet_to_json(workbook.Sheets[sheet[1]]);
-            // const mergedJSON = mergeTables(data, data1);
-            // const mergedJSONString = JSON.stringify(mergedJSON, null, 2);
-            // console.log(mergedJSONString);
-            mergeTables(data, data1);
+            const sheetData = utils.sheet_to_json(workbook.Sheets[sheet[0]]);
+            
+            setExcelData(sheetData);
           }
         };
         reader.readAsArrayBuffer(selected_file);
@@ -267,8 +234,6 @@ const QrGenerator = () => {
         }`;
         // Customize as needed
 
-        // console.log(dataToEncode, "This is the data to encode");
-
         // Store the unique identifier in the state
         setUniqueIds((prevIds) => [...prevIds, uniqueId]);
 
@@ -363,23 +328,32 @@ const QrGenerator = () => {
     });
   };
 
+  const fetchExcelDataFromURL = async (url) => {
+    try {
+      const response = await axios.get(url, { responseType: "arraybuffer" });
+      const urlData = new Uint8Array(response.data);
+      const workbook = XLSX.read(urlData, { type: "array" });
+      const sheetNames = workbook.SheetNames;
+      const page1 = XLSX.utils.sheet_to_json(workbook.Sheets[sheetNames[0]]).slice(1, 11);
+      // Update the state with the fetched data
+      setExcelData(page1);
+      setExcelError("");
+
+    } catch (error) {
+      setExcelData([]);
+      setExcelError("Error fetching data from URL");
+    }
+  };
+  
+
   const handleDownload = async () => {
-    if (downloadLinkRef.current) {
-      const value = downloadLinkRef.current.value;
-      console.log(value);
-      const response = await axios.get(value, { responseType: "arraybuffer" });
-      const data = new Uint8Array(response.data);
-      const workbook = XLSX.read(data, { type: "array" });
-      console.log(workbook);
-      const sheet = workbook.SheetNames;
-      const test = utils.sheet_to_json(workbook.Sheets[sheet[0]]);
-      console.log(workbook);
-      console.log(test);
-      setExcelData(test);
+    const url = downloadLinkRef.current.value;
+    if (url) {
+      fetchExcelDataFromURL(url);
     }
   };
 
-  // excelData && console.log(excelData, "this is the excell data");
+
   return (
     <section id="qrfinder" className="py-5">
       <div className="container">
@@ -464,13 +438,7 @@ const QrGenerator = () => {
                         <th>Dynamic Carbon Capturing, Grams of C (Summery)</th>
                         <th>O2_Production/Liters (Summery)</th>
                         <th>H2O_Production/Liters (Summery)</th>
-                        {/* <th>Farmers Name</th> */}
-                        <th>F.NO</th>
-                        {/* <th>LF UNIT NO</th> */}
-                        <th>Inestors Details</th>
                         <th>No of plants/Units</th>
-                        <th>Unit Established Date</th>
-                        <th>Species</th>
                         <th>performance of plants/Units as at date 2019/Feb</th>
                         <th>Payment</th>
                         <th>performance of plants/Units as at date 2020/Feb</th>
@@ -486,192 +454,49 @@ const QrGenerator = () => {
                     <tbody>
                       {excelData.length ? (
                         Object.values(excelData)
-                          .slice(2)
-                          .map((info, index) => {
-                            // console.log(info);
+                          .map((info) => {
                             return (
-                              <tr key={index}>
-                                <td>
-                                  {
-                                    info.__EMPTY //Ref_No
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_1 //Name
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_2 //Registration_No
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_3 //LF_UNIT_NO
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_4 //Inestors_Details
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_5 //Unit_Established_Date
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_6 //GPS
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_7 //Species
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_8 //['C-PES Calculations']
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_9 //Dynamic Carbon Capturing
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_10 //O2_Production_Liters_1_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_11 //H2O_Production_Liters_1_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_12 //PB_Accumilation_Grms_2_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_13 //Dynamic_Carbon_Capturing_Grams_of_C_2_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_14 //O2_Production_Liters_2_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_15 //H2O_Production_Liters_2_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_16 //PB_Accumilation_Grms_3_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_17 //Dynamic_Carbon_Capturing_Grams_of_C_3_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_18 //O2_Production_Liters_3_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_19 //H2O_Production_Liters_3_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_20 //PB_Accumilation_Grms_4_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_21 //Dynamic_Carbon_Capturing_Grams_of_C_4_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_22 //O2_Production_Liters_4_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_23 //H2O_Production_Liters_4_years
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_24 //PB_Accumilation_Grms_Summery
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_25 //Dynamic_Carbon_Capturing_Grams_of_C_Summery
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_26 //O2_Production_Liters_Summery
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    info.__EMPTY_27 //H2O_Production_Liters_Summery
-                                  }
-                                </td>
-                                {/* <td>{info["Farmers Name "]}</td> */}
-                                <td>{info["F.NO"]}</td>
-                                {/* <td>{info["LF UNIT NO"]}</td> */}
-                                <td>{info["Inestors Details"]}</td>
-                                <td>{info["No of plants/Units "]}</td>
-                                <td>{info["Unit Established  Date "]}</td>
-                                <td>{info[" Species"]}</td>
-                                <td>
-                                  {
-                                    info[
-                                      "performance  of plants/Units as at date 2019/Feb "
-                                    ]
-                                  }
-                                </td>
-                                <td>{info["Payment "]}</td>
-                                <td>
-                                  {
-                                    info[
-                                      "performance  of plants/Units as at date 2020/Feb "
-                                    ]
-                                  }
-                                </td>
-                                <td>{info["Payment _1"]}</td>
-                                <td>
-                                  {
-                                    info[
-                                      "performance  of plants/Units as at date 2021/Feb "
-                                    ]
-                                  }
-                                </td>
-                                <td>{info["Payment Ammount,$"]}</td>
-                                <td>{info["In SL Rupies"]}</td>
-                                <td>
-                                  {
-                                    info[
-                                      "performance  of plants/Units as at date 2022/Feb "
-                                    ]
-                                  }
-                                </td>
-                                <td>{info["Payment exchange $"]}</td>
-                                <td>{info["In SL Rupies_1"]}</td>
+                              <tr key={info}>
+                                <td>{info["Ref No"] || info["A"]}</td>
+                                <td>{info["Farmers Name "] || info["B"]}</td>
+                                <td>{info["Registration No"] || info["C"]}</td>
+                                <td>{info["LF UNIT NO"] || info["D"]}</td>
+                                <td>{info["Inestors Details"] || info["E"]}</td>
+                                <td>{info["Unit Established  Date "] || info["F"]}</td>
+                                <td>{info["GPS"] || info["G"]}</td>
+                                <td>{info[" Species"] || info["H"]}</td>
+                                <td>{info["PB Accumilation/Grms(Year1)"] || info["I"]}</td>
+                                <td>{info["Dynamic Carbon Capturing, Grams of C(Year1)"] || info["J"]}</td>
+                                <td>{info["O2 Production/Liters(Year1)"] || info["K"]}</td>
+                                <td>{info["H2O Production/Liters(Year1)"] || info["L"]}</td>
+                                <td>{info["PB Accumilation/Grms(Year2)"] || info["M"]}</td>
+                                <td>{info["Dynamic Carbon Capturing, Grams of C(Year2)"] || info["N"]}</td>
+                                <td>{info["O2 Production/Liters(Year2)"] || info["O"]}</td>
+                                <td>{info["H2O Production/Liters(Year2)"] || info["P"]}</td>
+                                <td>{info["PB Accumilation/Grms(Year3)"] || info["Q"]}</td>
+                                <td>{info["Dynamic Carbon Capturing, Grams of C(Year3)"] || info["R"]}</td>
+                                <td>{info["O2 Production/Liters(Year3)"] || info["S"]}</td>
+                                <td>{info["H2O Production/Liters(Year3)"] || info["T"]}</td>
+                                <td>{info["PB Accumilation/Grms(Year4)"] || info["U"]}</td>
+                                <td>{info["Dynamic Carbon Capturing, Grams of C(Year4)"] || info["V"]}</td>
+                                <td>{info["O2 Production/Liters(Year4)"] || info["W"]}</td>
+                                <td>{info["H2O Production/Liters(Year4)"] || info["X"]}</td>
+                                <td>{info["PB Accumilation/Grms(summery)"] || info["Y"]}</td>
+                                <td>{info["Dynamic Carbon Capturing, Grams of C(summery)"] || info["Z"]}</td>
+                                <td>{info["O2 Production/Liters(summery)"] || info["AA"]}</td>
+                                <td>{info["H2O Production/Liters(summery)"] || info["AB"]}</td>
+                                <td>{info["No of plants/Units "] || info["AC"]}</td>
+                                <td>{info["performance  of plants/Units as at date 2019/Feb "] || info["AD"]}</td>
+                                <td>{info["Payment "] || info["AE"]}</td>
+                                <td>{info["performance  of plants/Units as at date 2020/Feb "] || info["AF"]}</td>
+                                <td>{info["Payment _1"] || info["AG"]}</td>
+                                <td>{info["performance  of plants/Units as at date 2021/Feb "] || info["AH"]}</td>
+                                <td>{info["Payment Ammount,$"] || info["AI"]}</td>
+                                <td>{info["In SL Rupies"] || info["AJ"]}</td>
+                                <td>{info["performance  of plants/Units as at date 2022/Feb "] || info["AK"]}</td>
+                                <td>{info["Payment exchange $"] || info["AL"]}</td>
+                                <td>{info["In SL Rupies_1"] || info["AM"]}</td>
+
                               </tr>
                             );
                           })
@@ -713,7 +538,7 @@ const QrGenerator = () => {
                 <Card key={uniqueIds[index]} className="qr-code-item">
                   <Card.Body>
                     {qrCode}
-                    <Button
+                    {/* <Button
                       className="mt-2"
                       variant="primary"
                       onClick={() => {
@@ -722,7 +547,7 @@ const QrGenerator = () => {
                       }}
                     >
                       View Certificates
-                    </Button>
+                    </Button> */}
 
                     <Button
                       className="mt-2"
@@ -756,7 +581,7 @@ const QrGenerator = () => {
           {selectedRow !== null && excelData[selectedRow] && (
             <>
               <div>
-                {/* <p>{excelData[selectedRow].Ref_No}</p>
+                <p>{excelData[selectedRow].Ref_No}</p>
 
                 {excelData[selectedRow].Registration_No}
                 {excelData[selectedRow].LF_UNIT_NO}
@@ -790,7 +615,7 @@ const QrGenerator = () => {
                     .Dynamic_Carbon_Capturing_Grams_of_C_4_years
                 }
                 {excelData[selectedRow].O2_Production_Liters_4_years}
-                {excelData[selectedRow].H2O_Production_Liters_4_years} */}
+                {excelData[selectedRow].H2O_Production_Liters_4_years}
               </div>
 
               <div id="certificate">
@@ -807,7 +632,6 @@ const QrGenerator = () => {
 
                       <div className="w-100"></div>
                       <div className="col">
-                        {/* <img src={chart}></img> */}
                         <div className="chart-container">
                           <canvas id="chart"></canvas>
                           <canvas id="chartProduction"></canvas>
