@@ -81,10 +81,16 @@ const QrGenerator = () => {
   };
 
   const downloadQRCode = (qrCodeElement, filename) => {
-    domtoimage.toBlob(qrCodeElement).then(function (blob) {
-      saveAs(blob, filename);
-    });
+    if (qrCodeElement) {
+      // Element exists, proceed with downloading
+      domtoimage.toBlob(qrCodeElement).then(function (blob) {
+        saveAs(blob, filename);
+      });
+    } else {
+      console.error("QR code element not found.");
+    }
   };
+  
 
   const file_type = [
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -114,124 +120,42 @@ const QrGenerator = () => {
   };
 
   const generateQRCodeData = () => {
-    // const qrCodes = excelData.map((info, index) => {
     const qrCodes = Object.values(excelData)
-      .slice(2)
-      .map((info, index) => {
+      .map((info,index) => {
         // Generate a unique identifier for each row (e.g., timestamp)
-        console.log(info, "this is from qr code");
-        const uniqueId = Date.now() + index; // You can customize this logic
+        const uniqueId = Date.now()+ index;; // You can customize this logic
 
         // Customize the data you want to encode in the QR code
         const dataToEncode = `
-        Name:${
-          info.__EMPTY_1 //Name
+        ${info["Farmers Name "] || info["B"]}
+        ${info["Registration No"] || info["C"]}
+        ${info["LF UNIT NO"] || info["D"]}
+        ${info["Inestors Details"] || info["E"]}
+        ${info["Unit Established  Date "] || info["F"]}
+        ${info["GPS"] || info["G"]}
+        ${info[" Species"] || info["H"]}
+        ${info["PB Accumilation/Grms(summery)"] || info["Y"]}
+        ${info["Dynamic Carbon Capturing, Grams of C(Year1)"] || info["J"]}
+        ${info["O2 Production/Liters(summery)"] || info["AA"]}
+        ${info["H2O Production/Liters(summery)"] || info["AB"]}
+        ${
+          info["performance  of plants/Units as at date 2019/Feb "] || info["AD"]
         }
-        Registration_No:${
-          info.__EMPTY_2 //Registration_No
+        ${info["Payment "] || info["AE"]} 
+        ${
+          info["performance  of plants/Units as at date 2020/Feb "] || info["AF"]
         }
-        LF_UNIT_NO:${
-          info.__EMPTY_3 //LF_UNIT_NO
+        ${info["Payment _1"] || info["AG"]} 
+        ${
+          info["performance  of plants/Units as at date 2021/Feb "] || info["AH"]
         }
-        Inestors_Details:${
-          info.__EMPTY_4 //Inestors_Details
+        ${info["Payment Ammount,$"] || info["AI"]} 
+        ${info["In SL Rupies"] || info["AJ"]} 
+        ${
+          info["performance  of plants/Units as at date 2022/Feb "] || info["AK"]
         }
-        Unit_Established_Date:${
-          info.__EMPTY_5 //Unit_Established_Date
-        }
-        GPS:${
-          info.__EMPTY_6 //GPS
-        }
-        Species:${
-          info.__EMPTY_7 //Species
-        }
-        C-PES Calculations:${
-          info.__EMPTY_8 //['C-PES Calculations']
-        }
-        Dynamic Carbon Capturing:${
-          info.__EMPTY_9 //Dynamic Carbon Capturing
-        }
-        O2_Production_Liters_1_years:${
-          info.__EMPTY_10 //O2_Production_Liters_1_years
-        }
-        H2O_Production_Liters_1_years:${
-          info.__EMPTY_11 //H2O_Production_Liters_1_years
-        }
-        PB_Accumilation_Grms_2_years:${
-          info.__EMPTY_12 //PB_Accumilation_Grms_2_years
-        }
-        Dynamic_Carbon_Capturing_Grams_of_C_2_years:${
-          info.__EMPTY_13 //Dynamic_Carbon_Capturing_Grams_of_C_2_years
-        }
-        O2_Production_Liters_2_years:${
-          info.__EMPTY_14 //O2_Production_Liters_2_years
-        }
-        H2O_Production_Liters_2_years:${
-          info.__EMPTY_15 //H2O_Production_Liters_2_years
-        }
-        PB_Accumilation_Grms_3_years:${
-          info.__EMPTY_16 //PB_Accumilation_Grms_3_years
-        }
-        Dynamic_Carbon_Capturing_Grams_of_C_3_years:${
-          info.__EMPTY_17 //Dynamic_Carbon_Capturing_Grams_of_C_3_years
-        }
-        O2_Production_Liters_3_years:${
-          info.__EMPTY_18 //O2_Production_Liters_3_years
-        }
-        H2O_Production_Liters_3_years:${
-          info.__EMPTY_19 //H2O_Production_Liters_3_years
-        }
-        PB_Accumilation_Grms_4_years:${
-          info.__EMPTY_20 //PB_Accumilation_Grms_4_years
-        }
-        Dynamic_Carbon_Capturing_Grams_of_C_4_years:${
-          info.__EMPTY_21 //Dynamic_Carbon_Capturing_Grams_of_C_4_years
-        }
-        O2_Production_Liters_4_years:${
-          info.__EMPTY_22 //O2_Production_Liters_4_years
-        }
-        H2O_Production_Liters_4_years:${
-          info.__EMPTY_23 //H2O_Production_Liters_4_years
-        }
-        PB_Accumilation_Grms_Summery:${
-          info.__EMPTY_24 //PB_Accumilation_Grms_Summery
-        }
-        Dynamic_Carbon_Capturing_Grams_of_C_Summery:${
-          info.__EMPTY_25 //Dynamic_Carbon_Capturing_Grams_of_C_Summery
-        }
-        O2_Production_Liters_Summery:${
-          info.__EMPTY_26 //O2_Production_Liters_Summery
-        }
-        H2O_Production_Liters_Summery:${
-          info.__EMPTY_27 //H2O_Production_Liters_Summery
-        }
-        Farmers Name:${info["Farmers Name "]} F.NO:${info["F.NO"]} LF UNIT NO:${
-          info["LF UNIT NO"]
-        } Inestors Details:${info["Inestors Details"]} No of plants/Units:${
-          info["No of plants/Units "]
-        } Uit Established  Date:${info["Uit Established  Date "]} Species:${
-          info[" Species"]
-        } performance  of plants/Units as at date 2019/Feb:${
-          info["performance  of plants/Units as at date 2019/Feb "]
-        }
-        Payment:${
-          info["Payment "]
-        } performance  of plants/Units as at date 2020/Feb:${
-          info["performance  of plants/Units as at date 2020/Feb "]
-        }
-        Payment _1:${
-          info["Payment _1"]
-        } performance  of plants/Units as at date 2021/Feb:${
-          info["performance  of plants/Units as at date 2021/Feb "]
-        }
-        Payment Ammount,$:${info["Payment Ammount,$"]} In SL Rupies:${
-          info["In SL Rupies"]
-        } performance  of plants/Units as at date 2022/Feb:${
-          info["performance  of plants/Units as at date 2022/Feb "]
-        }
-        Payment exchange $:${info["Payment exchange $"]} In SL Rupies_1:${
-          info["In SL Rupies_1"]
-        }`;
+        ${info["Payment exchange $"] || info["AL"]} 
+        ${info["In SL Rupies_1"] || info["AM"]}`;
         // Customize as needed
 
         // Store the unique identifier in the state
@@ -534,8 +458,9 @@ const QrGenerator = () => {
             </h2>
             <hr />
             <div className="qr-code-list">
-              {qrCodeData.map((qrCode, index) => (
-                <Card key={uniqueIds[index]} className="qr-code-item">
+            {qrCodeData.map((qrCode, index) => (
+              <div key={uniqueIds[index]} className="qr-code-item">
+                <Card>
                   <Card.Body>
                     {qrCode}
                     {/* <Button
@@ -548,22 +473,20 @@ const QrGenerator = () => {
                     >
                       View Certificates
                     </Button> */}
-
                     <Button
                       className="mt-2"
                       variant="success"
                       onClick={() => {
-                        const qrCodeElement = document.getElementById(
-                          `qr-code-${index}`
-                        );
-                        console.log("qrCodeElement:", qrCodeElement);
+                        const qrCodeElement = document.getElementById(`qr-code-${index}`);
+                        downloadQRCode(qrCodeElement, `QRCode_${index}.png`); // Provide a filename
                       }}
                     >
                       Download
                     </Button>
                   </Card.Body>
                 </Card>
-              ))}
+              </div>
+            ))}
             </div>
           </div>
         )}

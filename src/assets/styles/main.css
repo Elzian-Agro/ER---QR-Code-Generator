@@ -365,21 +365,24 @@ input{
 .qr-code-list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 20px;
 }
+
+
 
 .qr-gen span .btn{
   margin-left: 50%;
 }
 
 .qr-code-item {
-  flex: 1;
-  max-width: 14%;
+  flex: 0 0 calc(20% - 20px); /* 33.33% for 3 items per row with a gap of 20px */
+  max-width: calc(20% - 20px); /* Same as above */
+  margin-bottom: 20px; /* Add spacing between rows */
 }
 
+
 .qr-code-item button{
-  width: 100%;
+  width: 60%;
 }
 
 .custom-table {
