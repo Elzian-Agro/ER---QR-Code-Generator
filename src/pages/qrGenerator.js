@@ -279,6 +279,12 @@ const QrGenerator = () => {
     }
   };
 
+  const downloadAllQrCodes = () => {
+    qrCodeData.map((qrCode, index) => {
+      const qrCodeElement = document.getElementById(`qr-code-${index}`);
+      downloadQRCode(qrCodeElement, `QRCode_${index}.png`);
+    });
+  };
   return (
     <section id="qrfinder" className="py-5">
       <div className="container">
@@ -537,7 +543,11 @@ const QrGenerator = () => {
               Your QR Codes
               <span className="">
                 {" "}
-                <button type="button" className="btn btn-success">
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  onClick={downloadAllQrCodes}
+                >
                   Download All
                 </button>
               </span>
