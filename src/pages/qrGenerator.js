@@ -46,7 +46,7 @@ const QrGenerator = () => {
   let tempPerformance2022;
   let tempPaymentInDoller2022;
   let tempPaymentInSL2022;
-  
+
   useEffect(() => {
     if (selectedRow !== null && excelData.length > 0) {
       // Run this code conditionally
@@ -302,6 +302,20 @@ const QrGenerator = () => {
     });
   };
 
+  const formatDateFromExcel = (dateSerialNumber) => {
+    const sheetDate = new Date((dateSerialNumber - 25569) * 86400 * 1000); // Convert Excel date serial number to milliseconds
+    const day = sheetDate.getDate();
+    const month = sheetDate.getMonth() + 1;
+    const year = sheetDate.getFullYear();
+    return `${month}.${day}.${year}`;
+  };
+
+  const decodeEntities = (encodedString) => {
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = encodedString;
+    return textarea.value;
+  };
+
   return (
     <section id="qrfinder" className="py-5">
       <div className="container">
@@ -402,19 +416,19 @@ const QrGenerator = () => {
                     <tbody>
                       {excelData.length ? (
                         Object.values(excelData).map((info) => {
-                          console.log(typeof info["A"]);
 
-                            if (typeof info["Ref No"] || typeof info["A"] == "number") {
-                              if (info["Farmers Name "] || info["B"]) {
-                                tempName = info["Farmers Name "] || info["B"] ;
-                                tempRegistrationNo = info["Registration No"] || info["C"];
-                                noOfPlants = info["No of plants/Units "] || info["AC"];
-                                tempPerformance2021 = info["performance  of plants/Units as at date 2021/Feb "] || info["AH"];
-                                tempPaymentInDoller = info["Payment Ammount,$"] || info["AI"] ;
-                                tempPaymentInSL = info["In SL Rupies"] || info["AJ"] ;
-                                tempPerformance2022 = info["performance  of plants/Units as at date 2022/Feb "] || info["AK"]
-                                tempPaymentInDoller2022 = info["Payment exchange $"] || info["AL"];
-                                tempPaymentInSL2022 = info["In SL Rupies_1"] || info["AM"];
+                            // Display merged cells in colum
+                          if (typeof info["Ref No"] || typeof info["A"] == "number") {
+                            if (info["Farmers Name "] || info["B"]) {
+                              tempName = info["Farmers Name "] || info["B"] ;
+                              tempRegistrationNo = info["Registration No"] || info["C"];
+                              noOfPlants = info["No of plants/Units "] || info["AC"];
+                              tempPerformance2021 = info["performance  of plants/Units as at date 2021/Feb "] || info["AH"];
+                              tempPaymentInDoller = info["Payment Ammount,$"] || info["AI"] ;
+                              tempPaymentInSL = info["In SL Rupies"] || info["AJ"] ;
+                              tempPerformance2022 = info["performance  of plants/Units as at date 2022/Feb "] || info["AK"]
+                              tempPaymentInDoller2022 = info["Payment exchange $"] || info["AL"];
+                              tempPaymentInSL2022 = info["In SL Rupies_1"] || info["AM"];
  
                               } else {
                                 info["Farmers Name "] = tempName;
@@ -427,6 +441,15 @@ const QrGenerator = () => {
                                 info["Payment exchange $"] = tempPaymentInDoller2022;
                                 info["In SL Rupies_1"] = tempPaymentInSL2022;
                               }
+
+                          const unitEstablishedDate = info["F"];
+                          const formattedUnitEstablishedDate = formatDateFromExcel(unitEstablishedDate);
+                          
+                          const encodedGPSData = info["GPS"] || info["G"];
+                          const decodedGPSData = decodeEntities(encodedGPSData);
+                          
+                            // Assign the decoded GPS data back to the info object
+                          info["GPS"] = decodedGPSData;
                               
                           return (
                             <tr key={info}>
@@ -435,10 +458,8 @@ const QrGenerator = () => {
                               <td>{info["Registration No"] || info["C"]}</td>
                               <td>{info["LF UNIT NO"] || info["D"]}</td>
                               <td>{info["Inestors Details"] || info["E"]}</td>
-                              <td>
-                                {info["Unit Established  Date "] || info["F"]}
-                              </td>
-                              <td>{info["GPS"] || info["G"]}</td>
+                              <td>{info["Unit Established  Date "] || formattedUnitEstablishedDate}</td>
+                              <td>{info["GPS"]}</td>
                               <td>{info[" Species"] || info["H"]}</td>
                               <td>
                                 {info["PB Accumilation/Grms(Year1)"] ||
