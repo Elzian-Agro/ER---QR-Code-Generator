@@ -36,6 +36,17 @@ const QrGenerator = () => {
   const { authenticated } = useAuth();
   const navigate = useNavigate();
   const downloadLinkRef = useRef(null);
+
+  let tempName;
+  let tempRegistrationNo;
+  let noOfPlants;
+  let tempPerformance2021;
+  let tempPaymentInDoller;
+  let tempPaymentInSL;
+  let tempPerformance2022;
+  let tempPaymentInDoller2022;
+  let tempPaymentInSL2022;
+  
   useEffect(() => {
     if (selectedRow !== null && excelData.length > 0) {
       // Run this code conditionally
@@ -99,15 +110,13 @@ const QrGenerator = () => {
   const handleChange = (e) => {
     const selected_file = e.target.files[0];
     if (selected_file) {
-      if (selected_file && file_type.includes(selected_file.type)) {
+      if (file_type.includes(selected_file.type)) {
         let reader = new FileReader();
         reader.onload = (e) => {
           const workbook = read(e.target.result);
           const sheet = workbook.SheetNames;
           if (sheet.length) {
-            const sheetData = utils.sheet_to_json(workbook.Sheets[sheet[0]]);
-
-            setExcelData(sheetData);
+            setExcelData(utils.sheet_to_json(workbook.Sheets[sheet[0]]));
           }
         };
         reader.readAsArrayBuffer(selected_file);
@@ -260,12 +269,19 @@ const QrGenerator = () => {
       const urlData = new Uint8Array(response.data);
       const workbook = XLSX.read(urlData, { type: "array" });
       const sheetNames = workbook.SheetNames;
-      const page1 = XLSX.utils
-        .sheet_to_json(workbook.Sheets[sheetNames[0]])
-        .slice(1, 11);
-      // Update the state with the fetched data
-      setExcelData(page1);
-      setExcelError("");
+  
+      // Read all rows from the first sheet
+      const allData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetNames[0]]);
+  
+      // Filter out rows with data in column 'A' (or any other column)
+      const nonEmptyRows = allData.filter(row => {
+        return row['A'] !== undefined;
+      });
+  
+      // Exclude the first row
+      const nonEmptyRowsExcludingFirst = nonEmptyRows.slice(1);
+  
+      setExcelData(nonEmptyRowsExcludingFirst);
     } catch (error) {
       setExcelData([]);
       setExcelError("Error fetching data from URL");
@@ -285,6 +301,7 @@ const QrGenerator = () => {
       downloadQRCode(qrCodeElement, `QRCode_${index}.png`);
     });
   };
+
   return (
     <section id="qrfinder" className="py-5">
       <div className="container">
@@ -385,6 +402,32 @@ const QrGenerator = () => {
                     <tbody>
                       {excelData.length ? (
                         Object.values(excelData).map((info) => {
+                          console.log(typeof info["A"]);
+
+                            if (typeof info["Ref No"] || typeof info["A"] == "number") {
+                              if (info["Farmers Name "] || info["B"]) {
+                                tempName = info["Farmers Name "] || info["B"] ;
+                                tempRegistrationNo = info["Registration No"] || info["C"];
+                                noOfPlants = info["No of plants/Units "] || info["AC"];
+                                tempPerformance2021 = info["performance  of plants/Units as at date 2021/Feb "] || info["AH"];
+                                tempPaymentInDoller = info["Payment Ammount,$"] || info["AI"] ;
+                                tempPaymentInSL = info["In SL Rupies"] || info["AJ"] ;
+                                tempPerformance2022 = info["performance  of plants/Units as at date 2022/Feb "] || info["AK"]
+                                tempPaymentInDoller2022 = info["Payment exchange $"] || info["AL"];
+                                tempPaymentInSL2022 = info["In SL Rupies_1"] || info["AM"];
+ 
+                              } else {
+                                info["Farmers Name "] = tempName;
+                                info["Registration No"] = tempRegistrationNo;
+                                info["No of plants/Units "] = noOfPlants;
+                                info["performance  of plants/Units as at date 2021/Feb "] = tempPerformance2021;
+                                info["Payment Ammount,$"] = tempPaymentInDoller;
+                                info["In SL Rupies"] = tempPaymentInSL;
+                                info["performance  of plants/Units as at date 2022/Feb "] = tempPerformance2022;
+                                info["Payment exchange $"] = tempPaymentInDoller2022;
+                                info["In SL Rupies_1"] = tempPaymentInSL2022;
+                              }
+                              
                           return (
                             <tr key={info}>
                               <td>{info["Ref No"] || info["A"]}</td>
@@ -515,7 +558,7 @@ const QrGenerator = () => {
                               <td>{info["In SL Rupies_1"] || info["AM"]}</td>
                             </tr>
                           );
-                        })
+                        }})
                       ) : excelError.length ? (
                         <tr>{excelError}</tr>
                       ) : (
