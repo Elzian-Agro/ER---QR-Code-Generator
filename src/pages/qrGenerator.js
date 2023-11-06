@@ -129,44 +129,47 @@ const QrGenerator = () => {
 
   const generateQRCodeData = () => {
     const qrCodes = Object.values(excelData).map((info, index) => {
+
+      const unitEstablishedDate = info["F"];
+      const formattedUnitEstablishedDate = formatDateFromExcel(unitEstablishedDate);
       // Generate a unique identifier for each row (e.g., timestamp)
       const uniqueId = Date.now() + index; // You can customize this logic
 
       // Customize the data you want to encode in the QR code
       const dataToEncode = `
-        ${info["Farmers Name "] || info["B"]}
-        ${info["Registration No"] || info["C"]}
-        ${info["LF UNIT NO"] || info["D"]}
-        ${info["Inestors Details"] || info["E"]}
-        ${info["Unit Established  Date "] || info["F"]}
-        ${info["GPS"] || info["G"]}
-        ${info[" Species"] || info["H"]}
-        ${info["PB Accumilation/Grms(summery)"] || info["Y"]}
-        ${info["Dynamic Carbon Capturing, Grams of C(Year1)"] || info["J"]}
-        ${info["O2 Production/Liters(summery)"] || info["AA"]}
-        ${info["H2O Production/Liters(summery)"] || info["AB"]}
-        ${
-          info["performance  of plants/Units as at date 2019/Feb "] ||
-          info["AD"]
-        }
-        ${info["Payment "] || info["AE"]} 
-        ${
-          info["performance  of plants/Units as at date 2020/Feb "] ||
-          info["AF"]
-        }
-        ${info["Payment _1"] || info["AG"]} 
-        ${
-          info["performance  of plants/Units as at date 2021/Feb "] ||
-          info["AH"]
-        }
-        ${info["Payment Ammount,$"] || info["AI"]} 
-        ${info["In SL Rupies"] || info["AJ"]} 
-        ${
-          info["performance  of plants/Units as at date 2022/Feb "] ||
-          info["AK"]
-        }
-        ${info["Payment exchange $"] || info["AL"]} 
-        ${info["In SL Rupies_1"] || info["AM"]}`;
+        Farmer's Name: ${info["Farmers Name "] || info["B"]}
+        Registration No: ${info["Registration No"] || info["C"]}
+        LF Unit No: ${info["LF UNIT NO"] || info["D"]}
+        investors Details: ${info["Inestors Details"] || info["E"]}
+        UE_Date: ${info["Unit Established  Date "] || formattedUnitEstablishedDate}}
+        GPS: ${info["GPS"] || info["G"]}
+        Species: ${info[" Species"] || info["H"]}
+        PBA(Summery): ${info["PB Accumilation/Grms(summery)"] || info["Y"]}
+        DCC(Summery): ${info["Dynamic Carbon Capturing, Grams of C(summery)"] || info["Z"]}
+        O2(Summery): ${info["O2 Production/Liters(summery)"] || info["AA"]}
+        H2O(Summery): ${info["H2O Production/Liters(summery)"] || info["AB"]}
+        PoP(2019/Feb): ${
+            info["performance  of plants/Units as at date 2019/Feb "] ||
+            info["AD"]
+          }
+        Payment: ${info["Payment "] || info["AE"]} 
+        PoP(2020/Feb): ${
+            info["performance  of plants/Units as at date 2020/Feb "] ||
+            info["AF"]
+          }
+        Payment: ${info["Payment _1"] || info["AG"]} 
+        PoP(2021/Feb):  ${
+            info["performance  of plants/Units as at date 2021/Feb "] ||
+            info["AH"]
+          }
+        $ ${info["Payment Ammount,$"] || info["AI"]} 
+        Rs. ${info["In SL Rupies"] || info["AJ"]} 
+        PoP(2022/Feb): ${
+            info["performance  of plants/Units as at date 2022/Feb "] ||
+            info["AK"]
+          }
+        $ ${info["Payment exchange $"] || info["AL"]} 
+        Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
       // Customize as needed
 
       // Store the unique identifier in the state
