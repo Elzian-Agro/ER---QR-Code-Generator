@@ -14,7 +14,7 @@ function QRCodeComponent({ data }) {
         const qrCode = new QRCodeStyling({
             width: 200,
             height: 200,
-            margin: 5,
+            margin: 3,
             type: "canvas", // Choose 'canvas' or 'svg'
             image: logoER,
             data: data,
