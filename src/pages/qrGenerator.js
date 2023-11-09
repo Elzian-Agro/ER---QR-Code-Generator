@@ -10,19 +10,12 @@ import logo from "../assets/logo.png";
 import { Modal, Button as ModalButton } from "react-bootstrap";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-
 import axios from "axios";
 import * as XLSX from "xlsx";
-import {
-  faUpload,
-  faEye,
-  faDownload,
-  faSync,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUpload, faEye, faDownload, faSync } from "@fortawesome/free-solid-svg-icons";
 import "../assets/fontAwesome/fontAwesomeIcon";
 import { utils, read } from "xlsx";
-import QRCode from "qrcode.react";
-
+import QRCodeComponent from "../components/QRCodeComponent";
 import { Chart } from "chart.js/auto";
 
 const QrGenerator = () => {
@@ -91,17 +84,6 @@ const QrGenerator = () => {
     setShowModal(false);
   };
 
-  const downloadQRCode = (qrCodeElement, filename) => {
-    if (qrCodeElement) {
-      // Element exists, proceed with downloading
-      domtoimage.toBlob(qrCodeElement).then(function (blob) {
-        saveAs(blob, filename);
-      });
-    } else {
-      console.error("QR code element not found.");
-    }
-  };
-
   const file_type = [
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     "application/vnd.ms-excel",
@@ -136,40 +118,40 @@ const QrGenerator = () => {
       const uniqueId = Date.now() + index; // You can customize this logic
 
       // Customize the data you want to encode in the QR code
-      const dataToEncode = `
-        Farmer's Name: ${info["Farmers Name "] || info["B"]}
-        Registration No: ${info["Registration No"] || info["C"]}
-        LF Unit No: ${info["LF UNIT NO"] || info["D"]}
-        investors Details: ${info["Inestors Details"] || info["E"]}
-        UE_Date: ${info["Unit Established  Date "] || formattedUnitEstablishedDate}}
-        GPS: ${info["GPS"] || info["G"]}
-        Species: ${info[" Species"] || info["H"]}
-        PBA(Summery): ${info["PB Accumilation/Grms(summery)"] || info["Y"]}
-        DCC(Summery): ${info["Dynamic Carbon Capturing, Grams of C(summery)"] || info["Z"]}
-        O2(Summery): ${info["O2 Production/Liters(summery)"] || info["AA"]}
-        H2O(Summery): ${info["H2O Production/Liters(summery)"] || info["AB"]}
-        PoP(2019/Feb): ${
-            info["performance  of plants/Units as at date 2019/Feb "] ||
-            info["AD"]
-          }
-        Payment: ${info["Payment "] || info["AE"]} 
-        PoP(2020/Feb): ${
+      const dataToEncode = 
+        `Farmer:${info["Farmers Name "] || info["B"]}
+Registration:${info["Registration No"] || info["C"]}
+LF Unit No:${info["LF UNIT NO"] || info["D"]}
+investors:${info["Inestors Details"] || info["E"]}
+UE_Date:${info["Unit Established  Date "] || formattedUnitEstablishedDate}
+GPS:${info["GPS"] || info["G"]}
+Species:${info[" Species"] || info["H"]}
+PB(Sum):${info["PB Accumilation/Grms(summery)"] || info["Y"]}
+DCC(Sum):${info["Dynamic Carbon Capturing, Grams of C(summery)"] || info["Z"]}
+O2(Sum):${info["O2 Production/Liters(summery)"] || info["AA"]}
+H2O(Sum):${info["H2O Production/Liters(summery)"] || info["AB"]}
+Performance(2019/2):${
+    info["performance  of plants/Units as at date 2019/Feb "] ||
+    info["AD"]
+  }
+Payment:${info["Payment "] || info["AE"]} 
+Performance(2020/2):${
             info["performance  of plants/Units as at date 2020/Feb "] ||
             info["AF"]
           }
-        Payment: ${info["Payment _1"] || info["AG"]} 
-        PoP(2021/Feb):  ${
-            info["performance  of plants/Units as at date 2021/Feb "] ||
-            info["AH"]
-          }
-        $ ${info["Payment Ammount,$"] || info["AI"]} 
-        Rs. ${info["In SL Rupies"] || info["AJ"]} 
-        PoP(2022/Feb): ${
-            info["performance  of plants/Units as at date 2022/Feb "] ||
-            info["AK"]
-          }
-        $ ${info["Payment exchange $"] || info["AL"]} 
-        Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
+Payment:${info["Payment _1"] || info["AG"]} 
+Performance(2021/2): ${
+    info["performance  of plants/Units as at date 2021/Feb "] ||
+    info["AH"]
+  }
+$${info["Payment Ammount,$"] || info["AI"]} 
+Rs.${info["In SL Rupies"] || info["AJ"]} 
+Performance(2022/2):${
+    info["performance  of plants/Units as at date 2022/Feb "] ||
+    info["AK"]
+  }
+$${info["Payment exchange $"] || info["AL"]} 
+Rs.${info["In SL Rupies_1"] || info["AM"]}`;
       // Customize as needed
 
       // Store the unique identifier in the state
@@ -177,13 +159,31 @@ const QrGenerator = () => {
 
       return (
         <div key={uniqueId}>
-          <QRCode value={dataToEncode} />
+          <QRCodeComponent data={dataToEncode} />
         </div>
       );
     });
 
     setQRCodeData(qrCodes);
     setUniqueIds([...Array(excelData.length).keys()]);
+  };
+
+  const downloadQRCode = (qrCodeElement, filename) => {
+    if (qrCodeElement) {
+      // Element exists, proceed with downloading
+      domtoimage.toBlob(qrCodeElement).then(function (blob) {
+        saveAs(blob, filename);
+      });
+    } else {
+      console.error("QR code element not found.");
+    }
+  };
+
+  const downloadAllQrCodes = () => {
+    qrCodeData.map((qrCode, index) => {
+      const qrCodeElement = document.getElementById(`qr-code-${index}`);
+      downloadQRCode(qrCodeElement, `QRCode_${index}.png`);
+    });
   };
 
   const renderChart = () => {
@@ -296,13 +296,6 @@ const QrGenerator = () => {
     if (url) {
       fetchExcelDataFromURL(url);
     }
-  };
-
-  const downloadAllQrCodes = () => {
-    qrCodeData.map((qrCode, index) => {
-      const qrCodeElement = document.getElementById(`qr-code-${index}`);
-      downloadQRCode(qrCodeElement, `QRCode_${index}.png`);
-    });
   };
 
   const formatDateFromExcel = (dateSerialNumber) => {
@@ -622,10 +615,12 @@ const QrGenerator = () => {
             <hr />
             <div className="qr-code-list">
               {qrCodeData.map((qrCode, index) => (
-                <div key={uniqueIds[index]}>
+                <div className="qr-code-card" key={uniqueIds[index]}>
                   <Card>
                     <Card.Body>
-                      <div id={`qr-code-${index}`}>{qrCode}</div>
+                    <div id={`qr-code-${index}`} className="qr-code">
+                      {qrCode}
+                    </div>
                       {/* <Button
                       className="mt-2"
                       variant="primary"
