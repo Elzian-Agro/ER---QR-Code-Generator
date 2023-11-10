@@ -1,0 +1,420 @@
+/*--------QR Code---------*/
+
+/*--------QR Code Dashboard---------*/
+
+#qrfinder {
+  margin-top: 5%;
+  background-color: #f5f5f5;
+  padding: 40px 0;
+}
+
+#qrfinder .container {
+  margin-left: 10%;
+}
+
+#qrfinder h2 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+  /* margin-left: 20%; */
+}
+
+#qrfinder p {
+  font-size: 1.1rem;
+  color: #555;
+  /* margin-left: 20%; */
+}
+
+#qrfinder span a {
+  color: black;
+  text-decoration: none;
+}
+
+#qrfinder .img-fluid {
+  max-width: 100%;
+}
+
+#qrfinder img {
+  height: 300px;
+  width: 300px;
+}
+
+#qrfinder .btn-btn {
+  padding: 13px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 5px;
+  font-size: 16px;
+  background-color: green;
+  color: white;
+}
+
+#qrfinder .btn-btn:hover,
+.btn-btn1:hover {
+  background-color: rgb(25, 171, 171);
+}
+
+#qrfinder a {
+  color: white;
+  text-decoration: none;
+}
+
+#qrfinder .btn-btn svg {
+  margin-right: 5px;
+}
+
+#dropdown {
+  background-color: green;
+  color: white;
+  width: 35%;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.card{
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.card:hover{
+  cursor: pointer;
+}
+#dropdown{
+  padding-bottom: 13px;
+}
+
+.qr-gen{
+  margin-top: 80px;
+}
+
+@media screen and (max-width: 767px) {
+  #qrfinder {
+    width: 100%;
+  }
+
+  #qrfinder .container {
+    margin-left: 0;
+  }
+  .col-lg-7,
+  .col-lg-5 {
+    width: 100%;
+    text-align: center;
+  }
+
+  .btn-btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+.logout {
+  background-color: rgb(180, 3, 3);
+}
+
+/*--------Login---------*/
+.contianer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-card {
+  background-color: white;
+  width: 150vh;
+  height: 70vh;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.row {
+  padding: 50px;
+}
+
+.title {
+  text-align: center;
+  color: rgba(128, 128, 128, 0.863);
+}
+
+.logo-img {
+  width: 280px;
+  height: 200px;
+}
+
+.col-md-5 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+}
+
+.input-container {
+  position: relative;
+  margin: 36px;
+}
+
+.input-label {
+  position: absolute;
+  top: 50%;
+  left: 30px;
+  transform: translateY(-50%);
+  color: #999;
+  pointer-events: none;
+  transition: 0.3s ease-out;
+}
+
+.input-field {
+  width: 90%;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 50px;
+  font-size: 16px;
+  transition: 0.3s ease-out;
+}
+
+.input-field:focus {
+  border-color: green;
+}
+
+.input-field:focus + .input-label,
+.input-field:not(:placeholder-shown) + .input-label {
+  top: -10px;
+  font-size: 12px;
+  color: gray;
+  background-color: white;
+  padding: 0 5px;
+}
+.remember-me {
+  margin-right: 200px;
+}
+.button {
+  width: 70% !important;
+  margin-left: 70px;
+  margin-right: 50px;
+}
+.gen-btn{
+  margin-left: 800px;
+}
+.btn-one {
+  padding: 10px 20px;
+  background-color: rgb(70, 70, 70);
+  border: none;
+  border-radius: 50px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease-out, color 0.3s ease-out;
+}
+
+.btn-one:hover {
+  background-color: rgb(24, 188, 193) !important;
+  color: white !important;
+}
+.btn-danger {
+  margin-left: 550px;
+}
+.form-control {
+  width: 88%;
+  background-color: rgb(245, 245, 245);
+}
+input{
+  height: 50px;
+}
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .login-card {
+    /* width: 90%; */
+    height: 100vh;
+    width: 100%;
+  }
+  .remember-me {
+    margin-right: 90px;
+  }
+  .row {
+    padding: 10px;
+  }
+  .btn {
+    margin-left: -30px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .login-card {
+    width: 100%;
+    padding: 10px;
+  }
+  .remember-me {
+    margin-right: 120px;
+  }
+  .input-label {
+    left: 10px;
+  }
+  .input-field {
+    width: 100%;
+  }
+}
+
+/*Responsive Tablet*/
+@media (min-width: 768px) and (max-width: 1024px) {
+  .login-card {
+    width: 80%;
+    padding: 10px;
+    height: 35vh;
+  }
+  .remember-me {
+    margin-right: 150px;
+  }
+  .input-label {
+    left: 10px;
+  }
+  .input-field {
+    width: 100%;
+  }
+}
+
+.Alert-message {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgb(155, 4, 4);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: none;
+  width: 30%;
+  z-index: 10000;
+  text-align: center;
+  font-size: 22px;
+}
+
+.Alert-message.show {
+  display: block;
+}
+
+.close {
+  margin-left: 300px;
+}
+
+/*--------Login Dashboard---------*/
+
+/*------------Certificate-------------*/
+#certificate{
+  padding: 30px;
+}
+
+#certificate .certificate-content{
+  margin-top: -50%;
+  margin-bottom: 90px;
+  margin-left: 300px;
+}
+
+.download-btn{
+  position: fixed;
+  bottom: 80px; /* Adjust the distance from the bottom as needed */
+  right: 80px; /* Adjust the distance from the right as needed */
+  z-index: 999; /* Ensure it appears above other elements */
+}
+
+/* CSS */
+.button-44 {
+  background: #e62143;
+  border-radius: 11px;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-family: Mija,-apple-system,BlinkMacSystemFont,Roboto,"Roboto Slab","Droid Serif","Segoe UI",system-ui,Arial,sans-serif;
+  font-size: 1.15em;
+  font-weight: 700;
+  justify-content: center;
+  line-height: 33.4929px;
+  padding: .8em 1em;
+  text-align: center;
+  text-decoration: none;
+  text-decoration-skip-ink: auto;
+  text-shadow: rgba(0, 0, 0, .3) 1px 1px 1px;
+  text-underline-offset: 1px;
+  transition: all .2s ease-in-out;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: 100%;
+  word-break: break-word;
+  border: 0;
+}
+
+.button-44:active,
+.button-44:focus {
+  border-bottom-style: none;
+  border-color: #dadada;
+  box-shadow: rgba(0, 0, 0, .3) 0 3px 3px inset;
+  outline: 0;
+}
+
+.button-44:hover {
+  border-bottom-style: none;
+  border-color: #dadada;
+}
+/*------------Certificate-------------*/
+
+/*-------------QR Code-----------*/
+/* CSS for arranging QR codes horizontally */
+.qr-code-list {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+ 
+  gap: 20px;
+}
+
+
+
+
+.qr-gen span .btn{
+  margin-left: 50%;
+}
+
+.qr-code-item {
+  flex: 0 0 calc(20% - 20px); /* 33.33% for 3 items per row with a gap of 20px */
+  max-width: calc(20% - 20px); /* Same as above */
+  margin-bottom: 20px; /* Add spacing between rows */
+}
+
+
+.qr-code-item button{
+  width: 60%;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse; 
+}
+
+.custom-table th, .custom-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+
+.custom-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.table-container {
+  max-width: 100%; 
+  overflow-x: auto;
+}
+
+.data-model{
+  max-width: 800px !important; /* Adjust the desired maximum width */
+  width: 90% !important; 
+}
+.chart-container {
+  width: 500px; /* Adjust the width as needed */
+  height: 300px; /* Adjust the height as needed */
+}
+/*-------------QR Code-----------*/
