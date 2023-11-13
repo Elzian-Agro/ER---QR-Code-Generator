@@ -5,14 +5,13 @@ import { useAuth } from "../AuthContext";
 import { useNavigate, Navigate } from "react-router-dom";
 import ".././assets/styles/main.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Card, Button } from "react-bootstrap";
+import { Card, Button, Modal } from "react-bootstrap";
 import logo from "../assets/logo.png";
-import { Modal, Button as ModalButton } from "react-bootstrap";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import axios from "axios";
 import * as XLSX from "xlsx";
-import { faUpload, faEye, faDownload, faSync } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faSync } from "@fortawesome/free-solid-svg-icons";
 import "../assets/fontAwesome/fontAwesomeIcon";
 import { utils, read } from "xlsx";
 import QRCodeComponent from "../components/QRCodeComponent";
@@ -25,6 +24,7 @@ const QrGenerator = () => {
   const [excelError, setExcelError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  
   const [selectedQRCodeData, setSelectedQRCodeData] = useState(null);
   const { authenticated } = useAuth();
   const navigate = useNavigate();
@@ -55,7 +55,7 @@ const QrGenerator = () => {
     localStorage.removeItem("rememberedUsername");
     localStorage.removeItem("rememberedPassword");
 
-    navigate("/login");
+    navigate("/");
   };
 
   const generatePDF = () => {
