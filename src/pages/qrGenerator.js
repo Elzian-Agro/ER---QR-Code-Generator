@@ -160,7 +160,7 @@ Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
 
       return (
         <div key={uniqueId}>
-          <QRCodeComponent data={dataToEncode} />
+          <QRCodeComponent qrCodeContent={dataToEncode} />
         </div>
       );
     });

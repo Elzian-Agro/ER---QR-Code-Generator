@@ -1,67 +1,30 @@
 import React, { useEffect, useRef } from "react";
-import logoER from "../assets/images/ER LOGO2.png"
-import QRCodeStyling from "qr-code-styling";
+import createQRCode from "../config/qrcode-config";
 
-function QRCodeComponent({ data }) {
-    const qrCodeRef = useRef(null);
+function QRCodeComponent({ qrCodeContent }) {
+    // Create a ref to the container where the QR code will be rendered
+    const qrCodeContainerRef = useRef(null);
 
     useEffect(() => {
         // Clear previous content if any
-        qrCodeRef.current.innerHTML = '';
+        qrCodeContainerRef.current.innerHTML = '';
 
-        const currentRef = qrCodeRef.current; // Create a local variable
-
-        const qrCode = new QRCodeStyling({
-            width: 200,
-            height: 200,
-            margin: 3,
-            type: "canvas", // Choose 'canvas' or 'svg'
-            image: logoER,
-            data: data,
-            
-            backgroundOptions: {
-                color: "#FFFFFF",
-            },
-            imageOptions: {
-                crossOrigin: "anonymous",
-                imageSize: 0.4,
-                margin: 1,
-            },
-            cornersSquareOptions:{
-                type: "extra-rounded"
-
-            },
-            cornersDotOptions:{
-                color: "#0F007F",
-                type: "dot"
-            },
-            dotsOptions: {
-                color: "#222222", // Base color
-                gradient: {
-                    type: "linear", // or "radial"
-                    rotation: 0, // Angle in degrees (for linear gradient)
-                    colorStops: [
-                        { offset: 0, color: "#4267b2" }, // Start color at position 0
-                        { offset: 1, color: "#11AA00" }, // End color at position 1
-                    ],
-                },
-            }
-        });
-
-        if (currentRef) {
-            qrCode.append(currentRef);
+        // Create QR Code and append to DOM
+        if (qrCodeContainerRef.current) {
+            createQRCode(qrCodeContent).append(qrCodeContainerRef.current);
         }
 
         // Cleanup when component is unmounted
         return () => {
             // Clear content and any other cleanup you may need
-            if (currentRef) {
-                currentRef.innerHTML = '';
+            if (qrCodeContainerRef.current) {
+                qrCodeContainerRef.current.innerHTML = '';
             }
         };
-    }, [qrCodeRef, data]);
+    }, [qrCodeContainerRef, qrCodeContent]);
 
-    return <div ref={qrCodeRef}></div>;
+    // Render the container for the QR code
+    return <div ref={qrCodeContainerRef}></div>;
 }
 
 export default QRCodeComponent;
