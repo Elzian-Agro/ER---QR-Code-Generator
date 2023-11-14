@@ -30,15 +30,8 @@ const QrGenerator = () => {
   const navigate = useNavigate();
   const downloadLinkRef = useRef(null);
 
-  let tempName;
-  let tempRegistrationNo;
-  let noOfPlants;
-  let tempPerformance2021;
-  let tempPaymentInDoller;
-  let tempPaymentInSL;
-  let tempPerformance2022;
-  let tempPaymentInDoller2022;
-  let tempPaymentInSL2022;
+  // Store temporary data in an object
+  const tempData = {};
 
   useEffect(() => {
     if (selectedRow !== null && excelData.length > 0) {
@@ -60,7 +53,6 @@ const QrGenerator = () => {
 
   const generatePDF = () => {
     if (selectedRow !== null && excelData[selectedRow]) {
-      const rowData = excelData[selectedRow];
       const uniqueId = Date.now(); // Generate a unique ID (you can customize this logic)
 
       const certificateElement = document.getElementById("certificate");
@@ -331,7 +323,6 @@ Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
                 </button>
               </span>
             </h2>
-
             <hr />
             <p>
               Excel URL:
@@ -417,26 +408,26 @@ Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
                             // Display merged cells in colum
                           if (typeof info["Ref No"] || typeof info["A"] == "number") {
                             if (info["Farmers Name "] || info["B"]) {
-                              tempName = info["Farmers Name "] || info["B"] ;
-                              tempRegistrationNo = info["Registration No"] || info["C"];
-                              noOfPlants = info["No of plants/Units "] || info["AC"];
-                              tempPerformance2021 = info["performance  of plants/Units as at date 2021/Feb "] || info["AH"];
-                              tempPaymentInDoller = info["Payment Ammount,$"] || info["AI"] ;
-                              tempPaymentInSL = info["In SL Rupies"] || info["AJ"] ;
-                              tempPerformance2022 = info["performance  of plants/Units as at date 2022/Feb "] || info["AK"]
-                              tempPaymentInDoller2022 = info["Payment exchange $"] || info["AL"];
-                              tempPaymentInSL2022 = info["In SL Rupies_1"] || info["AM"];
+                              tempData.name = info["Farmers Name "] || info["B"] ;
+                              tempData.registrationNo = info["Registration No"] || info["C"];
+                              tempData.noOfPlants = info["No of plants/Units "] || info["AC"];
+                              tempData.performance2021 = info["performance  of plants/Units as at date 2021/Feb "] || info["AH"];
+                              tempData.paymentInDoller = info["Payment Ammount,$"] || info["AI"] ;
+                              tempData.paymentInSL = info["In SL Rupies"] || info["AJ"] ;
+                              tempData.performance2022 = info["performance  of plants/Units as at date 2022/Feb "] || info["AK"]
+                              tempData.paymentInDoller2022 = info["Payment exchange $"] || info["AL"];
+                              tempData.paymentInSL2022 = info["In SL Rupies_1"] || info["AM"];
  
                               } else {
-                                info["Farmers Name "] = tempName;
-                                info["Registration No"] = tempRegistrationNo;
-                                info["No of plants/Units "] = noOfPlants;
-                                info["performance  of plants/Units as at date 2021/Feb "] = tempPerformance2021;
-                                info["Payment Ammount,$"] = tempPaymentInDoller;
-                                info["In SL Rupies"] = tempPaymentInSL;
-                                info["performance  of plants/Units as at date 2022/Feb "] = tempPerformance2022;
-                                info["Payment exchange $"] = tempPaymentInDoller2022;
-                                info["In SL Rupies_1"] = tempPaymentInSL2022;
+                                info["Farmers Name "] = tempData.name;
+                                info["Registration No"] =  tempData.registrationNo;
+                                info["No of plants/Units "] = tempData.noOfPlants;
+                                info["performance  of plants/Units as at date 2021/Feb "] = tempData.performance2021;
+                                info["Payment Ammount,$"] = tempData.paymentInDoller;
+                                info["In SL Rupies"] = tempData.paymentInSL;
+                                info["performance  of plants/Units as at date 2022/Feb "] = tempData.performance2022;
+                                info["Payment exchange $"] = tempData.paymentInDoller2022;
+                                info["In SL Rupies_1"] = tempData.paymentInSL2022;
                               }
 
                           const unitEstablishedDate = info["F"];
@@ -582,6 +573,7 @@ Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
                     </tbody>
                   </table>
                 </div>
+                 {/* <ExcelDataViewer excelData={excelData} excelError={excelError} /> */}
               </Modal.Body>
             </Modal>
 
