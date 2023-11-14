@@ -3,20 +3,21 @@ import domtoimage from "dom-to-image";
 import { saveAs } from "file-saver";
 import { useAuth } from "../AuthContext";
 import { useNavigate, Navigate } from "react-router-dom";
-import ".././assets/styles/main.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Card, Button, Modal } from "react-bootstrap";
-import logo from "../assets/logo.png";
+import { faEye, faSync } from "@fortawesome/free-solid-svg-icons";
+import { Card, Button } from "react-bootstrap";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import axios from "axios";
 import * as XLSX from "xlsx";
-import { faEye, faSync } from "@fortawesome/free-solid-svg-icons";
-import "../assets/fontAwesome/fontAwesomeIcon";
 import { utils, read } from "xlsx";
-import QRCodeComponent from "../components/QRCodeComponent";
 import { Chart } from "chart.js/auto";
+import "../assets/fontAwesome/fontAwesomeIcon";
+import ".././assets/styles/main.css";
+import logo from "../assets/images/logo.png";
+import QRCodeComponent from "../components/QRCodeComponent";
 import ExcelDataViewer from "../components/ExelDataViewer";
+import ModalComponent from "../components/ModalComponent";
 
 const QrGenerator = () => {
   const [excelData, setExcelData] = useState([]);
@@ -25,8 +26,8 @@ const QrGenerator = () => {
   const [excelError, setExcelError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);  
-
   const [selectedQRCodeData, setSelectedQRCodeData] = useState(null);
+  
   const { authenticated } = useAuth();
   const navigate = useNavigate();
   const downloadLinkRef = useRef(null);
@@ -38,60 +39,57 @@ const QrGenerator = () => {
     }
   }, [selectedRow, excelData]);
 
+  // Check if the user is authenticated
   if (!authenticated) {
     return <Navigate to="/unAuth" />;
   }
 
+  // Handle logout
   const handleLogout = () => {
     localStorage.removeItem("rememberedUsername");
     localStorage.removeItem("rememberedPassword");
-
+    // Navigate to the login page
     navigate("/");
   };
 
+  // Download pdf
   const generatePDF = () => {
     if (selectedRow !== null && excelData[selectedRow]) {
-      const uniqueId = Date.now(); // Generate a unique ID (you can customize this logic)
-
-      const certificateElement = document.getElementById("certificate");
-
-      html2canvas(certificateElement).then((canvas) => {
+      html2canvas(document.getElementById("certificate")).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF("l", "mm", "a4");
         pdf.addImage(imgData, "PNG", 0, 0, 297, 210); // A4 size: 210mm x 297mm
-        pdf.save(`certificate_${uniqueId}.pdf`); // Use the unique ID as the filename
+        pdf.save(`certificate_${Date.now()}.pdf`); // Current date is use as UniqueId for file name
       });
     }
   };
 
-  // Reference to the anchor element
-
+  // Modal open
   const openModal = () => {
     setShowModal(true);
   };
 
+  // Modal close
   const closeModal = () => {
     setShowModal(false);
   };
 
+  // Handle exel file upload
   const file_type = [
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     "application/vnd.ms-excel",
   ];
-
   const handleChange = (e) => {
-    const selected_file = e.target.files[0];
-    if (selected_file) {
-      if (file_type.includes(selected_file.type)) {
+    if (e.target.files[0]) {
+      if (file_type.includes(e.target.files[0].type)) {
         let reader = new FileReader();
         reader.onload = (e) => {
           const workbook = read(e.target.result);
-          const sheet = workbook.SheetNames;
-          if (sheet.length) {
-            setExcelData(utils.sheet_to_json(workbook.Sheets[sheet[0]]));
+          if (workbook.SheetNames.length) {
+            setExcelData(utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]));
           }
         };
-        reader.readAsArrayBuffer(selected_file);
+        reader.readAsArrayBuffer(e.target.files[0]);
       } else {
         setExcelError("Please upload only an Excel file");
         setExcelData([]); // Clear the excelData
@@ -102,11 +100,6 @@ const QrGenerator = () => {
   const generateQRCodeData = () => {
     const qrCodes = Object.values(excelData).map((info, index) => {
 
-      const encodedGPSData = info["GPS"] || info["G"];
-      info["GPS"] = decodeEntities(encodedGPSData);
-
-      const unitEstablishedDate = info["F"];
-      const formattedUnitEstablishedDate = formatDateFromExcel(unitEstablishedDate);
       // Generate a unique identifier for each row (e.g., timestamp)
       const uniqueId = Date.now() + index; // You can customize this logic
 
@@ -116,8 +109,8 @@ const QrGenerator = () => {
 Registration: ${info["Registration No"] || info["C"]}
 LF Unit No: ${info["LF UNIT NO"] || info["D"]}
 investors: ${info["Inestors Details"] || info["E"]}
-UE_Date: ${info["Unit Established  Date "] || formattedUnitEstablishedDate}
-GPS: ${info["GPS"]}
+UE_Date: ${info["Unit Established  Date "] || formatDateFromExcel(info["F"])}
+GPS: ${decodeEntities(info["GPS"] || info["G"])}
 Species: ${info[" Species"] || info["H"]}
 PB(Sum): ${info["PB Accumilation/Grms(summery)"] || info["Y"]}
 DCC(Sum): ${info["Dynamic Carbon Capturing, Grams of C(summery)"] || info["Z"]}
@@ -177,6 +170,7 @@ Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
     });
   };
 
+  // Render chart for selected row
   const renderChart = () => {
     const ctx = document.getElementById("chart").getContext("2d");
     const cty = document.getElementById("chartProduction").getContext("2d");
@@ -231,78 +225,70 @@ Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
       type: "line", // Change the chart type to "line"
       data: {
         labels: ["Year 1", "Year 2", "Year 3", "Year 4"],
-        datasets: [
-          {
-            label: "Photosynthetic Biomass (Grams)",
-            data: [
-              excelData[selectedRow].PB_Accumilation_Grms_1_years,
-              excelData[selectedRow].PB_Accumilation_Grms_2_years,
-              excelData[selectedRow].PB_Accumilation_Grms_3_years,
-              excelData[selectedRow].PB_Accumilation_Grms_4_years,
-            ],
-            borderColor: "rgba(75, 192, 192, 1)", // Line color
-            borderWidth: 2, // Line width
-            pointBackgroundColor: "rgba(75, 192, 192, 1)", // Point color
-            pointRadius: 5, // Point radius
-          },
-        ],
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
+          datasets: [
+            {
+              label: "Photosynthetic Biomass (Grams)",
+              data: [
+                excelData[selectedRow].PB_Accumilation_Grms_1_years,
+                excelData[selectedRow].PB_Accumilation_Grms_2_years,
+                excelData[selectedRow].PB_Accumilation_Grms_3_years,
+                excelData[selectedRow].PB_Accumilation_Grms_4_years,
+              ],
+              borderColor: "rgba(75, 192, 192, 1)", // Line color
+              borderWidth: 2, // Line width
+              pointBackgroundColor: "rgba(75, 192, 192, 1)", // Point color
+              pointRadius: 5, // Point radius
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
           },
         },
-      },
-    });
-  };
+      });
+    };
 
   const fetchExcelDataFromURL = async (url) => {
     try {
       const response = await axios.get(url, { responseType: "arraybuffer" });
       const urlData = new Uint8Array(response.data);
-      const workbook = XLSX.read(urlData, { type: "array" });
-      const sheetNames = workbook.SheetNames;
+      const workBook = XLSX.read(urlData, { type: "array" });
   
       // Read all rows from the first sheet
-      const allData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetNames[0]]);
+      const allData = XLSX.utils.sheet_to_json(workBook.Sheets[workBook.SheetNames[0]]);
   
       // Filter out rows with data in column 'A' (or any other column)
       const nonEmptyRows = allData.filter(row => {
         return row['A'] !== undefined;
       });
   
-      // Exclude the first row
-      const nonEmptyRowsExcludingFirst = nonEmptyRows.slice(1);
-  
-      setExcelData(nonEmptyRowsExcludingFirst);
+      // Exclude the first row 
+      setExcelData(nonEmptyRows.slice(1));
     } catch (error) {
       setExcelData([]);
       setExcelError("Error fetching data from URL");
     }
   };
 
+  // Download excel data from URL
   const handleDownload = async () => {
-    const url = downloadLinkRef.current.value;
-    if (url) {
-      fetchExcelDataFromURL(url);
+    if (downloadLinkRef.current.value) {
+      fetchExcelDataFromURL(downloadLinkRef.current.value);
     }
   };
 
   // Format date
   const formatDateFromExcel = (dateSerialNumber) => {
     const sheetDate = new Date((dateSerialNumber - 25569) * 86400 * 1000); // Convert Excel date serial number to milliseconds
-    const day = sheetDate.getDate();
-    const month = sheetDate.getMonth() + 1;
-    const year = sheetDate.getFullYear();
-    return `${month}.${day}.${year}`;
+    return `${sheetDate.getMonth() + 1}.${sheetDate.getDate()}.${sheetDate.getFullYear()}`;
   };
 
-  const decodeEntities = (encodedString) => {
-    const textarea = document.createElement('textarea');
-    textarea.innerHTML = encodedString;
-    return textarea.value;
-  };
+  // Decodes HTML entities in a string
+  const decodeEntities = (encodedString) => 
+    (new DOMParser().parseFromString(encodedString, 'text/html')).body.textContent;
 
   return (
     <section id="qrfinder" className="py-5">
@@ -350,16 +336,13 @@ Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
               <FontAwesomeIcon icon={faEye} />
               View
             </button>
-            <Modal show={showModal} onHide={closeModal} fullscreen={true}>
-              <Modal.Header closeButton>
-                <Modal.Title>View Excel Data</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                 <ExcelDataViewer excelData={excelData} excelError={excelError} />
-              </Modal.Body>
-            </Modal>
-
-            <br></br>
+            <ModalComponent 
+              showModal={showModal} 
+              closeModal={closeModal}
+              screen={true}
+              modalHeader={"View Excel Data"}
+              modalContent={<ExcelDataViewer excelData={excelData} excelError={excelError} />}
+            />
             <div className="gen-btn">
               <button className="btn-btn" onClick={generateQRCodeData}>
                 <FontAwesomeIcon icon={faSync} />
@@ -368,7 +351,6 @@ Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
             </div>
           </div>
         </div>
-
         {qrCodeData.length > 0 && (
           <div className="qr-gen">
             <h2>
@@ -390,19 +372,19 @@ Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
                 <div className="qr-code-card" key={uniqueIds[index]}>
                   <Card>
                     <Card.Body>
-                    <div id={`qr-code-${index}`} className="qr-code">
-                      {qrCode}
-                    </div>
+                      <div id={`qr-code-${index}`} className="qr-code">
+                        {qrCode}
+                      </div>
                       {/* <Button
-                      className="mt-2"
-                      variant="primary"
-                      onClick={() => {
-                        setSelectedRow(index);
-                        setSelectedQRCodeData(qrCodeData[index]);
-                      }}
-                    >
-                      View Certificates
-                    </Button> */}
+                        className="mt-2"
+                        variant="primary"
+                        onClick={() => {
+                          setSelectedRow(index);
+                          setSelectedQRCodeData(qrCodeData[index]);
+                        }}
+                      >
+                        View Certificates
+                      </Button> */}
                       <Button
                         className="mt-2"
                         variant="success"
@@ -423,128 +405,122 @@ Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
           </div>
         )}
       </div>
-      <Modal
-        show={selectedRow !== null}
-        onHide={() => setSelectedRow(null)}
+      <ModalComponent 
         dialogClassName="modal-xl"
-        fullscreen={true}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Certificate</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedRow !== null && excelData[selectedRow] && (
-            <>
-              <div>
-                <p>{excelData[selectedRow].Ref_No}</p>
+        showModal={selectedRow !== null} 
+        closeModal={() => setSelectedRow(null)}
+        screen={true}
+        modalHeader={"Certificate"}
+        modalContent= {selectedRow !== null && excelData[selectedRow] && (
+          <>
+            <div>
+              <p>{excelData[selectedRow].Ref_No}</p>
 
-                {excelData[selectedRow].Registration_No}
-                {excelData[selectedRow].LF_UNIT_NO}
-                {excelData[selectedRow].Unit_Established_Date}
-                {excelData[selectedRow].GPS}
-                {excelData[selectedRow].Species}
-                {excelData[selectedRow].PB_Accumilation_Grms_1_years}
-                {
-                  excelData[selectedRow]
-                    .Dynamic_Carbon_Capturing_Grams_of_C_1_years
-                }
-                {excelData[selectedRow].O2_Production_Liters_1_years}
-                {excelData[selectedRow].H2O_Production_Liters_1_years}
-                {excelData[selectedRow].PB_Accumilation_Grms_2_years}
-                {
-                  excelData[selectedRow]
-                    .Dynamic_Carbon_Capturing_Grams_of_C_2_years
-                }
-                {excelData[selectedRow].O2_Production_Liters_2_years}
-                {excelData[selectedRow].H2O_Production_Liters_2_years}
-                {excelData[selectedRow].PB_Accumilation_Grms_3_years}
-                {
-                  excelData[selectedRow]
-                    .Dynamic_Carbon_Capturing_Grams_of_C_3_years
-                }
-                {excelData[selectedRow].O2_Production_Liters_3_years}
-                {excelData[selectedRow].H2O_Production_Liters_3_years}
-                {excelData[selectedRow].PB_Accumilation_Grms_4_years}
-                {
-                  excelData[selectedRow]
-                    .Dynamic_Carbon_Capturing_Grams_of_C_4_years
-                }
-                {excelData[selectedRow].O2_Production_Liters_4_years}
-                {excelData[selectedRow].H2O_Production_Liters_4_years}
-              </div>
+              {excelData[selectedRow].Registration_No}
+              {excelData[selectedRow].LF_UNIT_NO}
+              {excelData[selectedRow].Unit_Established_Date}
+              {excelData[selectedRow].GPS}
+              {excelData[selectedRow].Species}
+              {excelData[selectedRow].PB_Accumilation_Grms_1_years}
+              {
+                excelData[selectedRow]
+                  .Dynamic_Carbon_Capturing_Grams_of_C_1_years
+              }
+              {excelData[selectedRow].O2_Production_Liters_1_years}
+              {excelData[selectedRow].H2O_Production_Liters_1_years}
+              {excelData[selectedRow].PB_Accumilation_Grms_2_years}
+              {
+                excelData[selectedRow]
+                  .Dynamic_Carbon_Capturing_Grams_of_C_2_years
+              }
+              {excelData[selectedRow].O2_Production_Liters_2_years}
+              {excelData[selectedRow].H2O_Production_Liters_2_years}
+              {excelData[selectedRow].PB_Accumilation_Grms_3_years}
+              {
+                excelData[selectedRow]
+                  .Dynamic_Carbon_Capturing_Grams_of_C_3_years
+              }
+              {excelData[selectedRow].O2_Production_Liters_3_years}
+              {excelData[selectedRow].H2O_Production_Liters_3_years}
+              {excelData[selectedRow].PB_Accumilation_Grms_4_years}
+              {
+                excelData[selectedRow]
+                  .Dynamic_Carbon_Capturing_Grams_of_C_4_years
+              }
+              {excelData[selectedRow].O2_Production_Liters_4_years}
+              {excelData[selectedRow].H2O_Production_Liters_4_years}
+            </div>
 
-              <div id="certificate">
-                <div className="container">
-                  <div className="row">
-                    <div className="col-md-9">
-                      {/* Left side with QR code and logo */}
-                      <div className="row">
-                        <div className="col-md-4">
-                          <img src={logo} alt="Logo" width="200" height="150" />
-                        </div>
-                        <div className="col-md-8">{selectedQRCodeData}</div>
+            <div id="certificate">
+              <div className="container">
+                <div className="row">
+                  <div className="col-md-9">
+                    {/* Left side with QR code and logo */}
+                    <div className="row">
+                      <div className="col-md-4">
+                        <img src={logo} alt="Logo" width="200" height="150" />
                       </div>
-
-                      <div className="w-100"></div>
-                      <div className="col">
-                        <div className="chart-container">
-                          <canvas id="chart"></canvas>
-                          <canvas id="chartProduction"></canvas>
-                        </div>
+                      <div className="col-md-8">{selectedQRCodeData}</div>
+                    </div>
+                    <div className="w-100"></div>
+                    <div className="col">
+                      <div className="chart-container">
+                        <canvas id="chart"></canvas>
+                        <canvas id="chartProduction"></canvas>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="certificate-content">
-                      <div className="col-sm text-center">
-                        {/* Centered text content */}
-                        <h2>
-                          Payment for <br />
-                          Photosynthetic Biomass
-                        </h2>
-                        <h2>
-                          Sir{" "}
-                          <h4>
-                            <u>{excelData[selectedRow].Name}</u>
-                          </h4>{" "}
-                          <h5>made to</h5>Mr/Mrs
-                        </h2>
-                        <br />
-                        <br />
+                  <div className="certificate-content">
+                    <div className="col-sm text-center">
+                      {/* Centered text content */}
+                      <h2>
+                        Payment for <br />
+                        Photosynthetic Biomass
+                      </h2>
+                      <h2>
+                        Sir{" "}
                         <h4>
-                          <u>Name here</u>,<u>Name here</u>
-                        </h4>
-                        <h4>
-                          being a record of the settlement
-                          <br /> for maintaining
-                        </h4>
-
-                        <h4>
-                          <u>Numbers here</u>
-                        </h4>
-                        <br />
-                        <h2>
-                          EarthRestoration tree <br />
-                          UNIT(s) contracted for 4 years
-                        </h2>
-                        <br />
-                        <h4>
-                          <u>Numbers here</u>
-                        </h4>
-                      </div>
+                          <u>{excelData[selectedRow].Name}</u>
+                        </h4>{" "}
+                        <h5>made to</h5>
+                        Mr/Mrs
+                      </h2>
+                      <br /><br />
+                      <h4>
+                        <u>Name here</u>,<u>Name here</u>
+                      </h4>
+                      <h4>
+                        being a record of the settlement<br />
+                        for maintaining
+                      </h4>
+                      <h4>
+                        <u>Numbers here</u>
+                      </h4>
+                      <br />
+                      <h2>
+                        EarthRestoration tree <br />
+                        UNIT(s) contracted for 4 years
+                      </h2>
+                      <br />
+                      <h4>
+                        <u>Numbers here</u>
+                      </h4>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className="download-btn">
-                <button onClick={generatePDF} className="button-44">
-                  Download PDF
-                </button>
-              </div>
-            </>
-          )}
-        </Modal.Body>
-      </Modal>
+            <div className="download-btn">
+              <button onClick={generatePDF} className="button-44">
+                Download PDF
+              </button>
+            </div>
+          </>
+        )}
+      />
+      
     </section>
   );
 };
