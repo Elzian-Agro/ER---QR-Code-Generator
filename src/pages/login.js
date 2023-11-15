@@ -7,8 +7,8 @@ import "../assets/styles/main.css";
 import logo from "../assets/images/logo.png";
 
 const LoginForm = () => {
-  const [enterUsername, setEnterUsername] = useState("");
-  const [enterPassword, setEnterPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loginStatus, setLoginStatus] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -18,23 +18,23 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (localStorage.getItem("rememberedUsername") && localStorage.getItem("rememberedPassword")) {
-      setEnterUsername(localStorage.getItem("rememberedUsername"));
-      setEnterPassword("********");
+      setUsername(localStorage.getItem("rememberedUsername"));
+      setPassword("********");
       setRememberMe(true);
     }
   }, []);
 
   const handleLogin = async () => {
-    const user = users.find((user) => user.username === enterUsername);
+    const user = users.find((user) => user.username === username);
 
     // Check if the user exists and the password is correct or username and password locally saved
-    if ((user && await bcrypt.compare(enterPassword, user.password)) || (localStorage.getItem("rememberedUsername") && localStorage.getItem("rememberedPassword"))) {
+    if ((user && await bcrypt.compare(password, user.password)) || (localStorage.getItem("rememberedUsername") && localStorage.getItem("rememberedPassword"))) {
       setLoginStatus("");
       setIsLoading(true);
 
       if (rememberMe) {
-        localStorage.setItem("rememberedUsername", enterUsername);
-        localStorage.setItem("rememberedPassword", await bcrypt.hash(enterPassword, 10));
+        localStorage.setItem("rememberedUsername", username);
+        localStorage.setItem("rememberedPassword", await bcrypt.hash(password, 10));
       } else {
         localStorage.removeItem("rememberedUsername");
         localStorage.removeItem("rememberedPassword");
@@ -85,8 +85,8 @@ const LoginForm = () => {
                       <input
                         type="text"
                         className="input-field"
-                        value={enterUsername}
-                        onChange={(e) => setEnterUsername(e.target.value)}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         required
                       />
                       <label className="input-label">Email Address</label>
@@ -95,8 +95,8 @@ const LoginForm = () => {
                       <input
                         type="password"
                         className="input-field"
-                        value={enterPassword}
-                        onChange={(e) => setEnterPassword(e.target.value)}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                       />
                       <label className="input-label">Password</label>
