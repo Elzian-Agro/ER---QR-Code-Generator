@@ -169,19 +169,29 @@ const QrGenerator = () => {
 
   const generateQRCodeData = () => {
     const { fields } = qrCodeConfig;
+
+    const formatDateFromExcel = (dateSerialNumber) => {
+      // Convert Excel date serial number to milliseconds
+      const sheetDate = new Date((dateSerialNumber - 25569) * 86400 * 1000); 
+      return `${sheetDate.getMonth() + 1}.${sheetDate.getDate()}.${sheetDate.getFullYear()}`;
+    };
+
     const qrCodes = Object.values(excelData).map((info, index) => {
-      
-      // Generate a unique identifier for each row 
-      const uniqueId = Date.now() + index; // You can customize this logic
+      const uniqueId = Date.now() + index;
 
       let dataToEncode = "";
-      
+
       fields.forEach(({ label, key }) => {
-        const fieldValue = key.reduce((acc, curr) => acc || info[curr], "");
+        let fieldValue = key.reduce((acc, curr) => acc || info[curr], "");
+
+        // Customizing Date field format
+        if (label === "UE Date") {
+          fieldValue = formatDateFromExcel(fieldValue);
+        }
+
         dataToEncode += `${label}: ${fieldValue}\n`;
       });
 
-      // Store the unique identifier in the state
       setUniqueIds((prevIds) => [...prevIds, uniqueId]);
 
       return (
@@ -194,6 +204,7 @@ const QrGenerator = () => {
     setQRCodeData(qrCodes);
     setUniqueIds([...Array(excelData.length).keys()]);
   };
+
 
   const downloadQRCode = (qrCodeElement, filename) => {
     if (qrCodeElement) {
