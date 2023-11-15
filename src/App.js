@@ -1,9 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LoginForm from "./pages/login"; // Update the import path
-// import RegisterForm from "./pages/RegisterForm";
+import LoginForm from "./pages/login";
 import QrGenerator from "./pages/qrGenerator";
-import unAuth from "./pages/unauthorized";
 import { Auth } from "./AuthContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -15,7 +13,7 @@ function App() {
       <Router>
         <Header />
         <Routes>
-          <Route path="/login" element={<LoginForm />} />
+          <Route path="/" element={<LoginForm />} />
           <Route path="/qr" element={<QrGenerator />} />
           <Route path="/unAuth" element={<unAuth />} />
           <Route path="/certificate" element={<Certificate />} />

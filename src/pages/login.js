@@ -4,42 +4,37 @@ import users from "../users.json";
 import { useAuth } from "../AuthContext";
 import bcrypt from "bcryptjs";
 import "../assets/styles/main.css";
+import logo from "../assets/images/logo.png";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [message, setMessage] = useState("");
+  const [loginStatus, setLoginStatus] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const { login } = useAuth();
 
   useEffect(() => {
-    const savedUsername = localStorage.getItem("rememberedUsername");
-    const savedPassword = localStorage.getItem("rememberedPassword");
-
-    if (savedUsername && savedPassword) {
-      setUsername(savedUsername);
-      setPassword(savedPassword);
+    if (localStorage.getItem("rememberedUsername") && localStorage.getItem("rememberedPassword")) {
+      setUsername(localStorage.getItem("rememberedUsername"));
+      setPassword("********");
       setRememberMe(true);
     }
   }, []);
 
-  const handleLogin = () => {
-    setMessage("");
+  const handleLogin = async () => {
+    const user = users.find((user) => user.username === username);
 
-    const user = users.find(
-      (user) => user.username === username && user.password === password
-    );
-
-    if (user) {
-      setMessage("");
+    // Check if the user exists and the password is correct or username and password locally saved
+    if ((user && await bcrypt.compare(password, user.password)) || (localStorage.getItem("rememberedUsername") && localStorage.getItem("rememberedPassword"))) {
+      setLoginStatus("");
       setIsLoading(true);
 
       if (rememberMe) {
         localStorage.setItem("rememberedUsername", username);
-        localStorage.setItem("rememberedPassword", password);
+        localStorage.setItem("rememberedPassword", await bcrypt.hash(password, 10));
       } else {
         localStorage.removeItem("rememberedUsername");
         localStorage.removeItem("rememberedPassword");
@@ -47,34 +42,37 @@ const LoginForm = () => {
 
       setTimeout(() => {
         setIsLoading(false);
-        setMessage("Login successful");
+        setLoginStatus("Login successful");
         login();
         navigate("/qr");
       }, 2000);
+
     } else {
-      setMessage("Invalid credentials");
+      setLoginStatus("Invalid credentials");
     }
   };
 
+  // Close the alert message
   const closeAlert = () => {
-    setMessage("");
+    setLoginStatus("");
   };
 
   return (
     <div>
       <div className="contianer">
-        <div className={`Alert-message ${message ? "show" : ""}`}>
+        <div className={`Alert-message ${loginStatus ? "show" : ""}`}>
           <button className="close" onClick={closeAlert}>
             <span aria-hidden="true">&times;</span>
           </button>
-          <p>{message}</p>
+          <p>{loginStatus}</p>
         </div>
         <div className="login-card">
           <div className="container">
             <div className="row">
               <div className="col-md-5">
                 <img
-                  src="https://restore.earth/assets/img/ER%20LOGO1.png"
+                  src={logo}
+                  alt="logo"
                   className="logo-img"
                 />
               </div>
@@ -123,11 +121,8 @@ const LoginForm = () => {
                       disabled={isLoading}
                     >
                       {isLoading ? (
-                        <div
-                          className="spinner-border spinner-border-sm text-info"
-                          role="status"
-                        >
-                          <span className="sr-only"></span>
+                        <div className="spinner-border spinner-border-sm text-info">
+                          <output className="sr-only">Loading...</output>
                         </div>
                       ) : (
                         "Login"

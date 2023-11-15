@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import logo from "../assets/logo.png";
-import "./Header.css";
+import logo from "../assets/images/logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFacebook,
@@ -10,25 +9,18 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 
 const Header = () => {
-  const [isNavCollapsed, setIsNavCollapsed] = useState(true);
-
-  const handleNavToggle = () => {
-    setIsNavCollapsed(!isNavCollapsed);
-  };
-
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark fixed-top">
+    <nav className="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
       <div className="container">
         <Link to="/" className="navbar-brand">
           <img
             src={logo}
             alt="Logo"
             height="30"
-            className="d-inline-block-align-top"
+            className="d-inline-block"
           />
         </Link>
-
-        <div class="icon">
+        <div className="d-flex gap-3 text-white">
           <FontAwesomeIcon icon={faFacebook} />
           <FontAwesomeIcon icon={faYoutube} />
           <FontAwesomeIcon icon={faLinkedin} />
