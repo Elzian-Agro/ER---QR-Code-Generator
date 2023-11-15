@@ -6,8 +6,6 @@ import { useNavigate, Navigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faSync } from "@fortawesome/free-solid-svg-icons";
 import { Card, Button } from "react-bootstrap";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import { utils, read } from "xlsx";
@@ -35,118 +33,9 @@ const QrGenerator = () => {
   const downloadLinkRef = useRef(null);
 
   useEffect(() => {
-    if (selectedRow !== null && excelData.length > 0) {
-      // Run this code conditionally
-      renderChart();
-    }
-  }, [selectedRow, excelData]);
 
-  // Check if the user is authenticated
-  if (!authenticated) {
-    return <Navigate to="/unAuth" />;
-  }
-
-  // Handle logout
-  const handleLogout = () => {
-    localStorage.removeItem("rememberedUsername");
-    localStorage.removeItem("rememberedPassword");
-    // Navigate to the login page
-    navigate("/");
-  };
-
-  // Download pdf
-  const generatePDF = () => {
-    if (selectedRow !== null && excelData[selectedRow]) {
-      html2canvas(document.getElementById("certificate")).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF("l", "mm", "a4");
-        pdf.addImage(imgData, "PNG", 0, 0, 297, 210); // A4 size: 210mm x 297mm
-        pdf.save(`certificate_${Date.now()}.pdf`); // Current date is use as UniqueId for file name
-      });
-    }
-  };
-
-  // Modal open
-  const openModal = () => {
-    setShowModal(true);
-  };
-
-  // Modal close
-  const closeModal = () => {
-    setShowModal(false);
-  };
-
-  // Handle exel file upload
-  const file_type = [
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "application/vnd.ms-excel",
-  ];
-  const handleChange = (e) => {
-    if (e.target.files[0]) {
-      if (file_type.includes(e.target.files[0].type)) {
-        let reader = new FileReader();
-        reader.onload = (e) => {
-          const workbook = read(e.target.result);
-          if (workbook.SheetNames.length) {
-            setExcelData(utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]));
-          }
-        };
-        reader.readAsArrayBuffer(e.target.files[0]);
-      } else {
-        setExcelError("Please upload only an Excel file");
-        setExcelData([]); // Clear the excelData
-      }
-    }
-  };
-
-  const generateQRCodeData = () => {
-    const { fields } = qrCodeConfig;
-    const qrCodes = Object.values(excelData).map((info, index) => {
-      
-      // Generate a unique identifier for each row 
-      const uniqueId = Date.now() + index; // You can customize this logic
-
-      let dataToEncode = "";
-      
-      fields.forEach(({ label, key }) => {
-        const fieldValue = key.reduce((acc, curr) => acc || info[curr], "");
-        dataToEncode += `${label}: ${fieldValue}\n`;
-      });
-
-      // Store the unique identifier in the state
-      setUniqueIds((prevIds) => [...prevIds, uniqueId]);
-
-      return (
-        <div key={uniqueId}>
-          <QRCodeGenerator qrCodeContent={dataToEncode} />
-        </div>
-      );
-    });
-
-    setQRCodeData(qrCodes);
-    setUniqueIds([...Array(excelData.length).keys()]);
-  };
-
-  const downloadQRCode = (qrCodeElement, filename) => {
-    if (qrCodeElement) {
-      // Element exists, proceed with downloading
-      domtoimage.toBlob(qrCodeElement).then(function (blob) {
-        saveAs(blob, filename);
-      });
-    } else {
-      console.error("QR code element not found.");
-    }
-  };
-
-  const downloadAllQrCodes = () => {
-    qrCodeData.map((qrCode, index) => {
-      const qrCodeElement = document.getElementById(`qr-code-${index}`);
-      downloadQRCode(qrCodeElement, `QRCode_${index}.png`);
-    });
-  };
-
-  // Render chart for selected row
-  const renderChart = () => {
+    // Render chart for selected row
+    const renderChart = () => {
     const ctx = document.getElementById("chart").getContext("2d");
     const cty = document.getElementById("chartProduction").getContext("2d");
 
@@ -226,6 +115,104 @@ const QrGenerator = () => {
       });
     };
 
+    if (selectedRow !== null && excelData.length > 0) {
+      // Run this code conditionally
+      renderChart();
+    }
+  }, [selectedRow, excelData, ]);
+
+  // Check if the user is authenticated
+  if (!authenticated) {
+    return <Navigate to="/unAuth" />;
+  }
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem("rememberedUsername");
+    localStorage.removeItem("rememberedPassword");
+    // Navigate to the login page
+    navigate("/");
+  };
+
+  // Modal open
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  // Modal close
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  // Handle exel file upload
+  const file_type = [
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-excel",
+  ];
+  const handleChange = (e) => {
+    if (e.target.files[0]) {
+      if (file_type.includes(e.target.files[0].type)) {
+        let reader = new FileReader();
+        reader.onload = (e) => {
+          const workbook = read(e.target.result);
+          if (workbook.SheetNames.length) {
+            setExcelData(utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]));
+          }
+        };
+        reader.readAsArrayBuffer(e.target.files[0]);
+      } else {
+        setExcelError("Please upload only an Excel file");
+        setExcelData([]); // Clear the excelData
+      }
+    }
+  };
+
+  const generateQRCodeData = () => {
+    const { fields } = qrCodeConfig;
+    const qrCodes = Object.values(excelData).map((info, index) => {
+      
+      // Generate a unique identifier for each row 
+      const uniqueId = Date.now() + index; // You can customize this logic
+
+      let dataToEncode = "";
+      
+      fields.forEach(({ label, key }) => {
+        const fieldValue = key.reduce((acc, curr) => acc || info[curr], "");
+        dataToEncode += `${label}: ${fieldValue}\n`;
+      });
+
+      // Store the unique identifier in the state
+      setUniqueIds((prevIds) => [...prevIds, uniqueId]);
+
+      return (
+        <div key={uniqueId}>
+          <QRCodeGenerator qrCodeContent={dataToEncode} />
+        </div>
+      );
+    });
+
+    setQRCodeData(qrCodes);
+    setUniqueIds([...Array(excelData.length).keys()]);
+  };
+
+  const downloadQRCode = (qrCodeElement, filename) => {
+    if (qrCodeElement) {
+      // Element exists, proceed with downloading
+      domtoimage.toBlob(qrCodeElement).then(function (blob) {
+        saveAs(blob, filename);
+      });
+    } else {
+      console.error("QR code element not found.");
+    }
+  };
+
+  const downloadAllQrCodes = () => {
+    qrCodeData.forEach((qrCode, index) => {
+      const qrCodeElement = document.getElementById(`qr-code-${index}`);
+      downloadQRCode(qrCodeElement, `QRCode_${index}.png`);
+    });
+  };
+
   const fetchExcelDataFromURL = async (url) => {
     try {
       const response = await axios.get(url, { responseType: "arraybuffer" });
@@ -255,16 +242,6 @@ const QrGenerator = () => {
     }
   };
 
-// Format date
-  const formatDateFromExcel = (dateSerialNumber) => {
-    const sheetDate = new Date((dateSerialNumber - 25569) * 86400 * 1000); // Convert Excel date serial number to milliseconds
-    return `${sheetDate.getMonth() + 1}.${sheetDate.getDate()}.${sheetDate.getFullYear()}`;
-  };
-
-  // Decodes HTML entities in a string
-  const decodeEntities = (encodedString) => 
-    (new DOMParser().parseFromString(encodedString, 'text/html')).body.textContent;
-
   return (
     <section id="qrfinder" className="py-5">
       <div className="container">
@@ -285,20 +262,20 @@ const QrGenerator = () => {
             </h2>
             <hr />
             <p>
-              Excel URL:
+              Excel URL:{" "}
               <input
                 className="form-control"
                 placeholder="Enter Excel Sheet URL"
                 type="text"
                 ref={downloadLinkRef}
                 onChange={handleDownload}
-              ></input>
+              />
             </p>
             <br />
             <p>Upload your details </p>
             <div>
               <form>
-                <label for="fileInput">Upload file XLS:&nbsp; </label>
+                <label htmlFor="fileInput">Upload file XLS:&nbsp; </label>
                 <input
                   type="file"
                   name="fileInput"
@@ -328,19 +305,15 @@ const QrGenerator = () => {
         </div>
         {qrCodeData.length > 0 && (
           <div className="qr-gen">
-            <h2>
-              Your QR Codes
-              <span className="">
-                {" "}
-                <button
-                  type="button"
-                  className="btn btn-success"
-                  onClick={downloadAllQrCodes}
-                >
-                  Download All
-                </button>
-              </span>
-            </h2>
+            <h2>Your QR Codes<span className="">
+              <button
+                type="button"
+                className="btn btn-success"
+                onClick={downloadAllQrCodes}
+              >
+                Download All
+              </button>
+          </span></h2>
             <hr />
             <div className="qr-code-list">
               {qrCodeData.map((qrCode, index) => (
@@ -350,7 +323,7 @@ const QrGenerator = () => {
                       <div id={`qr-code-${index}`} className="qr-code">
                         {qrCode}
                       </div>
-                      {/* <Button
+                      <Button
                         className="mt-2"
                         variant="primary"
                         onClick={() => {
@@ -359,7 +332,7 @@ const QrGenerator = () => {
                         }}
                       >
                         View Certificates
-                      </Button> */}
+                      </Button>
                       <Button
                         className="mt-2"
                         variant="success"
@@ -391,7 +364,6 @@ const QrGenerator = () => {
             excelData={excelData}
             selectedRow={selectedRow}
             selectedQRCodeData={selectedQRCodeData}
-            generatePDF={generatePDF}
           />
         )}
       />     

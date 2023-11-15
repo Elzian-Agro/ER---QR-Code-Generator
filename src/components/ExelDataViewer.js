@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const ExcelDataViewer = ({ excelData, excelError }) => {
   // Store temporary data in an object
@@ -14,7 +15,7 @@ const ExcelDataViewer = ({ excelData, excelError }) => {
   // Decodes HTML entities in a string
   const decodeEntities = (encodedString) => 
     (new DOMParser().parseFromString(encodedString, 'text/html')).body.textContent;
-
+  
   return (
     <div className="table-container">
       <table className="custom-table">
@@ -65,7 +66,7 @@ const ExcelDataViewer = ({ excelData, excelError }) => {
           {excelData.length ? (
             Object.values(excelData).map((info) => {
               // Display merged cells in colum
-              if (typeof info["Ref No"] || typeof info["A"] == "number") {
+              if (typeof info["Ref No"] === "number" || typeof info["A"] == "number") {
                 if (info["Farmers Name "] || info["B"]) {
                   tempData.name = info["Farmers Name "] || info["B"] ;
                   tempData.registrationNo = info["Registration No"] || info["C"];
@@ -142,6 +143,11 @@ const ExcelDataViewer = ({ excelData, excelError }) => {
       </table>            
     </div>
   );
+};
+
+ExcelDataViewer.propTypes = {
+  excelData: PropTypes.array.isRequired,
+  excelError: PropTypes.string,
 };
 
 export default ExcelDataViewer;
