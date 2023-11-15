@@ -14,10 +14,12 @@ import { utils, read } from "xlsx";
 import { Chart } from "chart.js/auto";
 import "../assets/fontAwesome/fontAwesomeIcon";
 import ".././assets/styles/main.css";
-import QRCodeComponent from "../components/QRCodeComponent";
 import ExcelDataViewer from "../components/ExelDataViewer";
 import ModalComponent from "../components/ModalComponent";
 import CertificateContent from "../components/CertificateContent";
+import QRCodeGenerator from "../components/QRCodeGenerator";
+import { qrCodeConfig } from "../config/qrcode-config";
+
 
 const QrGenerator = () => {
   const [excelData, setExcelData] = useState([]);
@@ -98,52 +100,25 @@ const QrGenerator = () => {
   };
 
   const generateQRCodeData = () => {
+    const { fields } = qrCodeConfig;
     const qrCodes = Object.values(excelData).map((info, index) => {
-
-      // Generate a unique identifier for each row (e.g., timestamp)
+      
+      // Generate a unique identifier for each row 
       const uniqueId = Date.now() + index; // You can customize this logic
 
-      // Customize the data you want to encode in the QR code
-      const dataToEncode = 
-        `Farmer: ${info["Farmers Name "] || info["B"]}
-Registration: ${info["Registration No"] || info["C"]}
-LF Unit No: ${info["LF UNIT NO"] || info["D"]}
-investors: ${info["Inestors Details"] || info["E"]}
-UE_Date: ${info["Unit Established  Date "] || formatDateFromExcel(info["F"])}
-GPS: ${decodeEntities(info["GPS"] || info["G"])}
-Species: ${info[" Species"] || info["H"]}
-PB(Sum): ${info["PB Accumilation/Grms(summery)"] || info["Y"]}
-DCC(Sum): ${info["Dynamic Carbon Capturing, Grams of C(summery)"] || info["Z"]}
-O2(Sum): ${info["O2 Production/Liters(summery)"] || info["AA"]}
-H2O(Sum): ${info["H2O Production/Liters(summery)"] || info["AB"]}
-Performance(2019/2): ${
-    info["performance  of plants/Units as at date 2019/Feb "] ||
-    info["AD"]
-  } - Payment: $${info["Payment "] || info["AE"]} 
-Performance(2020/2):${
-            info["performance  of plants/Units as at date 2020/Feb "] ||
-            info["AF"]
-          } - Payment: $${info["Payment _1"] || info["AG"]}
-Performance(2021/2): ${
-    info["performance  of plants/Units as at date 2021/Feb "] ||
-    info["AH"]
-  }
-$ ${info["Payment Ammount,$"] || info["AI"]} 
-Rs. ${info["In SL Rupies"] || info["AJ"]} 
-Performance(2022/2): ${
-    info["performance  of plants/Units as at date 2022/Feb "] ||
-    info["AK"]
-  }
-$ ${info["Payment exchange $"] || info["AL"]} 
-Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
-      // Customize as needed
+      let dataToEncode = "";
+      
+      fields.forEach(({ label, key }) => {
+        const fieldValue = key.reduce((acc, curr) => acc || info[curr], "");
+        dataToEncode += `${label}: ${fieldValue}\n`;
+      });
 
       // Store the unique identifier in the state
       setUniqueIds((prevIds) => [...prevIds, uniqueId]);
 
       return (
         <div key={uniqueId}>
-          <QRCodeComponent qrCodeContent={dataToEncode} />
+          <QRCodeGenerator qrCodeContent={dataToEncode} />
         </div>
       );
     });
@@ -280,7 +255,7 @@ Rs. ${info["In SL Rupies_1"] || info["AM"]}`;
     }
   };
 
-  // Format date
+// Format date
   const formatDateFromExcel = (dateSerialNumber) => {
     const sheetDate = new Date((dateSerialNumber - 25569) * 86400 * 1000); // Convert Excel date serial number to milliseconds
     return `${sheetDate.getMonth() + 1}.${sheetDate.getDate()}.${sheetDate.getFullYear()}`;

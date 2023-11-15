@@ -1,7 +1,16 @@
 import React, { useEffect, useRef } from "react";
-import createQRCode from "../config/qrcode-config";
+import QRCodeStyling from "qr-code-styling";
+import { qrCodeConfig } from "../config/qrcode-config";
 
-function QRCodeComponent({ qrCodeContent }) {
+function QRCodeGenerator({ qrCodeContent }) {
+    const { style } = qrCodeConfig;
+    
+    const createQRCode = (qrCodeContent) => {
+        return new QRCodeStyling({
+            ...style,
+            data: qrCodeContent,
+        });
+    };
     // Create a ref to the container where the QR code will be rendered
     const qrCodeContainerRef = useRef(null);
 
@@ -27,4 +36,4 @@ function QRCodeComponent({ qrCodeContent }) {
     return <div ref={qrCodeContainerRef}></div>;
 }
 
-export default QRCodeComponent;
+export default QRCodeGenerator;
