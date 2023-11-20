@@ -16,8 +16,6 @@ import ExcelDataViewer from "../components/ExelDataViewer";
 import ModalComponent from "../components/ModalComponent";
 import CertificateContent from "../components/CertificateContent";
 import QRCodeGenerator from "../components/QRCodeGenerator";
-import { qrCodeConfig } from "../config/qrcode-config";
-
 
 const QrGenerator = () => {
   const [excelData, setExcelData] = useState([]);
@@ -154,12 +152,25 @@ const QrGenerator = () => {
       if (file_type.includes(e.target.files[0].type)) {
         let reader = new FileReader();
         reader.onload = (e) => {
-          const workbook = read(e.target.result);
-          if (workbook.SheetNames.length) {
-            setExcelData(utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]));
+        const workbook = read(e.target.result);
+        if (workbook.SheetNames.length) {
+          const sheetData = utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+
+          let nonEmptyRows = [];
+          for (let i = 0; i < sheetData.length; i++) {
+            if (Object.values(sheetData[i]).some(val => val !== '' && val !== null)) {
+              nonEmptyRows.push(sheetData[i]);
+            } else {
+              // Break the loop when an empty row is encountered
+              break;
+            }
           }
-        };
-        reader.readAsArrayBuffer(e.target.files[0]);
+          
+          setExcelData(nonEmptyRows);
+        }
+      };
+      reader.readAsArrayBuffer(e.target.files[0]);
+        
       } else {
         setExcelError("Please upload only an Excel file");
         setExcelData([]); // Clear the excelData
@@ -168,30 +179,43 @@ const QrGenerator = () => {
   };
 
   const generateQRCodeData = () => {
-    const { fields } = qrCodeConfig;
-
+    // Format date from Excel date serial number
     const formatDateFromExcel = (dateSerialNumber) => {
       // Convert Excel date serial number to milliseconds
       const sheetDate = new Date((dateSerialNumber - 25569) * 86400 * 1000); 
       return `${sheetDate.getMonth() + 1}.${sheetDate.getDate()}.${sheetDate.getFullYear()}`;
     };
 
-    const qrCodes = Object.values(excelData).map((info, index) => {
+    // Decodes HTML entities in a string to their corresponding characters
+    const decodeEntities = (encodedString) => 
+      (new DOMParser().parseFromString(encodedString, 'text/html')).body.textContent;
+    
+    let firstRowData = { ...excelData[0] }; // Store the first row's data for coloumn names
+
+    const qrCodes = Object.values(excelData).slice(1).map((info, index) => {
       const uniqueId = Date.now() + index;
-
       let dataToEncode = "";
+      const columnNames = Object.keys(info);
 
-      fields.forEach(({ label, key }) => {
-        let fieldValue = key.reduce((acc, curr) => acc || info[curr], "");
+      columnNames.forEach((columnName) => {            
+        const fieldValue = info[columnName];
+        let formattedValue = fieldValue;
 
-        // Customizing Date field format
-        if (label === "UE Date") {
-          fieldValue = formatDateFromExcel(fieldValue);
+        //formatting the date
+        if (columnName === "E") {
+            formattedValue = formatDateFromExcel(fieldValue);
         }
 
-        dataToEncode += `${label}: ${fieldValue}\n`;
-      });
+        // Decoding HTML entities for GPS coordinates
+        if (columnName === "F") {
+            formattedValue = decodeEntities(fieldValue); 
+        }
 
+        if (firstRowData[columnName] !== 1) {
+          dataToEncode += `${firstRowData[columnName]}: ${formattedValue}\n`; 
+        }       
+      });
+      
       setUniqueIds((prevIds) => [...prevIds, uniqueId]);
 
       return (
@@ -204,7 +228,6 @@ const QrGenerator = () => {
     setQRCodeData(qrCodes);
     setUniqueIds([...Array(excelData.length).keys()]);
   };
-
 
   const downloadQRCode = (qrCodeElement, filename) => {
     if (qrCodeElement) {
@@ -239,7 +262,7 @@ const QrGenerator = () => {
       });
   
       // Exclude the first row 
-      setExcelData(nonEmptyRows.slice(1));
+      setExcelData(nonEmptyRows);
     } catch (error) {
       setExcelData([]);
       setExcelError("Error fetching data from URL");
@@ -334,7 +357,7 @@ const QrGenerator = () => {
                       <div id={`qr-code-${index}`} className="qr-code">
                         {qrCode}
                       </div>
-                      <Button
+                      {/* <Button
                         className="mt-2"
                         variant="primary"
                         onClick={() => {
@@ -343,7 +366,7 @@ const QrGenerator = () => {
                         }}
                       >
                         View Certificates
-                      </Button>
+                      </Button> */}
                       <Button
                         className="mt-2"
                         variant="success"
