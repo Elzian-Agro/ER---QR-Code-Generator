@@ -157,9 +157,9 @@ const QrGenerator = () => {
           const sheetData = utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
 
           let nonEmptyRows = [];
-          for (let i = 0; i < sheetData.length; i++) {
-            if (Object.values(sheetData[i]).some(val => val !== '' && val !== null)) {
-              nonEmptyRows.push(sheetData[i]);
+          for (let row of sheetData) {
+            if (Object.values(row).some(val => val !== '' && val !== null)) {
+              nonEmptyRows.push(row);
             } else {
               // Break the loop when an empty row is encountered
               break;
@@ -167,6 +167,7 @@ const QrGenerator = () => {
           }
           
           setExcelData(nonEmptyRows);
+          document.getElementById("excelUrlInput").value = ""
         }
       };
       reader.readAsArrayBuffer(e.target.files[0]);
@@ -273,6 +274,7 @@ const QrGenerator = () => {
   const handleDownload = async () => {
     if (downloadLinkRef.current.value) {
       fetchExcelDataFromURL(downloadLinkRef.current.value);
+      document.getElementById("fileInput").value = ""
     }
   };
 
@@ -299,6 +301,7 @@ const QrGenerator = () => {
               Excel URL:{" "}
               <input
                 className="form-control"
+                id="excelUrlInput"
                 placeholder="Enter Excel Sheet URL"
                 type="text"
                 ref={downloadLinkRef}
