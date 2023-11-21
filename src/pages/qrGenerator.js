@@ -345,7 +345,7 @@ const QrGenerator = () => {
             <h2>Your QR Codes<span className="">
               <button
                 type="button"
-                className="btn btn-success"
+                className="btn btn-btn"
                 onClick={downloadAllQrCodes}
               >
                 Download All
@@ -360,8 +360,8 @@ const QrGenerator = () => {
                       <div id={`qr-code-${index}`} className="qr-code">
                         {qrCode}
                       </div>
-                      {/* <Button
-                        className="mt-2"
+                      <Button
+                        className="mt-2 btn-btn"
                         variant="primary"
                         onClick={() => {
                           setSelectedRow(index);
@@ -369,9 +369,9 @@ const QrGenerator = () => {
                         }}
                       >
                         View Certificates
-                      </Button> */}
+                      </Button>
                       <Button
-                        className="mt-2"
+                        className="mt-2 btn-btn"
                         variant="success"
                         onClick={() => {
                           const qrCodeElement = document.getElementById(

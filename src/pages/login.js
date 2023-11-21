@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import users from "../users.json";
 import { useAuth } from "../AuthContext";
-import bcrypt from "bcryptjs";
 import "../assets/styles/main.css";
 import logo from "../assets/images/logo.png";
+const sha256 = require('js-sha256').sha256;
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
@@ -24,17 +24,22 @@ const LoginForm = () => {
     }
   }, []);
 
+  // Hash the password
+  const hashPassword = (password) => {
+    return sha256(password); // Simple SHA-256 hashing
+  };
+
   const handleLogin = async () => {
     const user = users.find((user) => user.username === username);
 
     // Check if the user exists and the password is correct or username and password locally saved
-    if ((user && await bcrypt.compare(password, user.password)) || (localStorage.getItem("rememberedUsername") && localStorage.getItem("rememberedPassword"))) {
+    if ((user && user.password === hashPassword(password)) || (localStorage.getItem("rememberedUsername") && localStorage.getItem("rememberedPassword"))) {
       setLoginStatus("");
       setIsLoading(true);
 
       if (rememberMe) {
         localStorage.setItem("rememberedUsername", username);
-        localStorage.setItem("rememberedPassword", await bcrypt.hash(password, 10));
+        localStorage.setItem("rememberedPassword", hashPassword(password));
       } else {
         localStorage.removeItem("rememberedUsername");
         localStorage.removeItem("rememberedPassword");
