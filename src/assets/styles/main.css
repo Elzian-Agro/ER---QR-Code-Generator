@@ -41,7 +41,7 @@
 }
 
 #qrfinder .btn-btn {
-  padding: 13px 20px;
+  padding: 8px 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -51,9 +51,11 @@
   color: white;
 }
 
+
+
 #qrfinder .btn-btn:hover,
 .btn-btn1:hover {
-  background-color: rgb(25, 171, 171);
+  background-color: rgb(62, 192, 221);
 }
 
 #qrfinder a {
@@ -208,7 +210,7 @@
 }
 
 .btn-one:hover {
-  background-color: rgb(24, 188, 193) !important;
+  background-color: rgb(62, 192, 221) !important;
   color: white !important;
 }
 .btn-danger {
@@ -400,8 +402,9 @@ input{
 
 
 .custom-table th {
-  background-color: #f2f2f2;
+  background-color: rgb(62, 192, 221);
   font-weight: bold;
+  color: white;
 }
 
 .table-container {

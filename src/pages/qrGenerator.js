@@ -16,8 +16,6 @@ import ExcelDataViewer from "../components/ExelDataViewer";
 import ModalComponent from "../components/ModalComponent";
 import CertificateContent from "../components/CertificateContent";
 import QRCodeGenerator from "../components/QRCodeGenerator";
-import { qrCodeConfig } from "../config/qrcode-config";
-
 
 const QrGenerator = () => {
   const [excelData, setExcelData] = useState([]);
@@ -25,70 +23,69 @@ const QrGenerator = () => {
   const [uniqueIds, setUniqueIds] = useState([]);
   const [excelError, setExcelError] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null);  
+  const [selectedRow, setSelectedRow] = useState(null);
   const [selectedQRCodeData, setSelectedQRCodeData] = useState(null);
-  
+
   const { authenticated } = useAuth();
   const navigate = useNavigate();
   const downloadLinkRef = useRef(null);
 
   useEffect(() => {
-
     // Render chart for selected row
     const renderChart = () => {
-    const ctx = document.getElementById("chart").getContext("2d");
-    const cty = document.getElementById("chartProduction").getContext("2d");
+      const ctx = document.getElementById("chart").getContext("2d");
+      const cty = document.getElementById("chartProduction").getContext("2d");
 
-    new Chart(cty, {
-      type: "line",
-      data: {
-        labels: ["Year 1", "Year 2", "Year 3", "Year 4"],
-        datasets: [
-          {
-            label: "O2 Production (Liters)",
-            data: [
-              excelData[selectedRow].O2_Production_Liters_1_years,
-              excelData[selectedRow].O2_Production_Liters_2_years,
-              excelData[selectedRow].O2_Production_Liters_3_years,
-              excelData[selectedRow].O2_Production_Liters_4_years,
-            ],
-            borderColor: "rgba(75, 192, 192, 1)",
-            borderWidth: 2,
-            pointBackgroundColor: "rgba(75, 192, 192, 1)",
-            pointRadius: 5,
-          },
-          {
-            label: "CO2 Production (Grams of C)",
-            data: [
-              excelData[selectedRow]
-                .Dynamic_Carbon_Capturing_Grams_of_C_1_years,
-              excelData[selectedRow]
-                .Dynamic_Carbon_Capturing_Grams_of_C_2_years,
-              excelData[selectedRow]
-                .Dynamic_Carbon_Capturing_Grams_of_C_3_years,
-              excelData[selectedRow]
-                .Dynamic_Carbon_Capturing_Grams_of_C_4_years,
-            ],
-            borderColor: "rgba(255, 99, 132, 1)",
-            borderWidth: 2,
-            pointBackgroundColor: "rgba(255, 99, 132, 1)",
-            pointRadius: 5,
-          },
-        ],
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
+      new Chart(cty, {
+        type: "line",
+        data: {
+          labels: ["Year 1", "Year 2", "Year 3", "Year 4"],
+          datasets: [
+            {
+              label: "O2 Production (Liters)",
+              data: [
+                excelData[selectedRow].O2_Production_Liters_1_years,
+                excelData[selectedRow].O2_Production_Liters_2_years,
+                excelData[selectedRow].O2_Production_Liters_3_years,
+                excelData[selectedRow].O2_Production_Liters_4_years,
+              ],
+              borderColor: "rgba(75, 192, 192, 1)",
+              borderWidth: 2,
+              pointBackgroundColor: "rgba(75, 192, 192, 1)",
+              pointRadius: 5,
+            },
+            {
+              label: "CO2 Production (Grams of C)",
+              data: [
+                excelData[selectedRow]
+                  .Dynamic_Carbon_Capturing_Grams_of_C_1_years,
+                excelData[selectedRow]
+                  .Dynamic_Carbon_Capturing_Grams_of_C_2_years,
+                excelData[selectedRow]
+                  .Dynamic_Carbon_Capturing_Grams_of_C_3_years,
+                excelData[selectedRow]
+                  .Dynamic_Carbon_Capturing_Grams_of_C_4_years,
+              ],
+              borderColor: "rgba(255, 99, 132, 1)",
+              borderWidth: 2,
+              pointBackgroundColor: "rgba(255, 99, 132, 1)",
+              pointRadius: 5,
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    new Chart(ctx, {
-      type: "line", // Change the chart type to "line"
-      data: {
-        labels: ["Year 1", "Year 2", "Year 3", "Year 4"],
+      new Chart(ctx, {
+        type: "line", // Change the chart type to "line"
+        data: {
+          labels: ["Year 1", "Year 2", "Year 3", "Year 4"],
           datasets: [
             {
               label: "Photosynthetic Biomass (Grams)",
@@ -119,7 +116,7 @@ const QrGenerator = () => {
       // Run this code conditionally
       renderChart();
     }
-  }, [selectedRow, excelData, ]);
+  }, [selectedRow, excelData]);
 
   // Check if the user is authenticated
   if (!authenticated) {
@@ -156,7 +153,24 @@ const QrGenerator = () => {
         reader.onload = (e) => {
           const workbook = read(e.target.result);
           if (workbook.SheetNames.length) {
-            setExcelData(utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]));
+            const sheetData = utils.sheet_to_json(
+              workbook.Sheets[workbook.SheetNames[0]],
+              { header: 1 }
+            );
+
+            let nonEmptyRows = [];
+            for (let row of sheetData) {
+              if (
+                Object.values(row).some((val) => val !== "" && val !== null)
+              ) {
+                nonEmptyRows.push(row);
+              } else {
+                break; // Break the loop when an empty row is encountered
+              }
+            }
+
+            setExcelData(nonEmptyRows);
+            document.getElementById("excelUrlInput").value = "";
           }
         };
         reader.readAsArrayBuffer(e.target.files[0]);
@@ -168,43 +182,60 @@ const QrGenerator = () => {
   };
 
   const generateQRCodeData = () => {
-    const { fields } = qrCodeConfig;
-
+    // Format date from Excel date serial number
     const formatDateFromExcel = (dateSerialNumber) => {
       // Convert Excel date serial number to milliseconds
-      const sheetDate = new Date((dateSerialNumber - 25569) * 86400 * 1000); 
-      return `${sheetDate.getMonth() + 1}.${sheetDate.getDate()}.${sheetDate.getFullYear()}`;
+      const sheetDate = new Date((dateSerialNumber - 25569) * 86400 * 1000);
+      return `${
+        sheetDate.getMonth() + 1
+      }.${sheetDate.getDate()}.${sheetDate.getFullYear()}`;
     };
 
-    const qrCodes = Object.values(excelData).map((info, index) => {
-      const uniqueId = Date.now() + index;
+    // Decodes HTML entities in a string to their corresponding characters
+    const decodeEntities = (encodedString) =>
+      new DOMParser().parseFromString(encodedString, "text/html").body
+        .textContent;
 
-      let dataToEncode = "";
+    let firstRowData = { ...excelData[0] }; // Store the first row's data for coloumn names
 
-      fields.forEach(({ label, key }) => {
-        let fieldValue = key.reduce((acc, curr) => acc || info[curr], "");
+    const qrCodes = Object.values(excelData)
+      .slice(1)
+      .map((info, index) => {
+        const uniqueId = Date.now() + index;
+        let dataToEncode = "";
+        const columnNames = Object.keys(info);
 
-        // Customizing Date field format
-        if (label === "UE Date") {
-          fieldValue = formatDateFromExcel(fieldValue);
-        }
+        columnNames.forEach((columnName) => {
+          const fieldValue = info[columnName];
+          let formattedValue = fieldValue;
 
-        dataToEncode += `${label}: ${fieldValue}\n`;
+          //formatting the date
+          if (columnName === "E") {
+            formattedValue = formatDateFromExcel(fieldValue);
+          }
+
+          // Decoding HTML entities for GPS coordinates
+          if (columnName === "F") {
+            formattedValue = decodeEntities(fieldValue);
+          }
+
+          if (firstRowData[columnName] !== 1) {
+            dataToEncode += `${firstRowData[columnName]}: ${formattedValue}\n`;
+          }
+        });
+
+        setUniqueIds((prevIds) => [...prevIds, uniqueId]);
+
+        return (
+          <div key={uniqueId}>
+            <QRCodeGenerator qrCodeContent={dataToEncode} />
+          </div>
+        );
       });
-
-      setUniqueIds((prevIds) => [...prevIds, uniqueId]);
-
-      return (
-        <div key={uniqueId}>
-          <QRCodeGenerator qrCodeContent={dataToEncode} />
-        </div>
-      );
-    });
 
     setQRCodeData(qrCodes);
     setUniqueIds([...Array(excelData.length).keys()]);
   };
-
 
   const downloadQRCode = (qrCodeElement, filename) => {
     if (qrCodeElement) {
@@ -229,17 +260,19 @@ const QrGenerator = () => {
       const response = await axios.get(url, { responseType: "arraybuffer" });
       const urlData = new Uint8Array(response.data);
       const workBook = XLSX.read(urlData, { type: "array" });
-  
+
       // Read all rows from the first sheet
-      const allData = XLSX.utils.sheet_to_json(workBook.Sheets[workBook.SheetNames[0]]);
-  
+      const allData = XLSX.utils.sheet_to_json(
+        workBook.Sheets[workBook.SheetNames[0]]
+      );
+
       // Filter out rows with data in column 'A' (or any other column)
-      const nonEmptyRows = allData.filter(row => {
-        return row['A'] !== undefined;
+      const nonEmptyRows = allData.filter((row) => {
+        return row["A"] !== undefined;
       });
-  
-      // Exclude the first row 
-      setExcelData(nonEmptyRows.slice(1));
+
+      // Exclude the first row
+      setExcelData(nonEmptyRows);
     } catch (error) {
       setExcelData([]);
       setExcelError("Error fetching data from URL");
@@ -250,6 +283,7 @@ const QrGenerator = () => {
   const handleDownload = async () => {
     if (downloadLinkRef.current.value) {
       fetchExcelDataFromURL(downloadLinkRef.current.value);
+      document.getElementById("fileInput").value = "";
     }
   };
 
@@ -276,6 +310,7 @@ const QrGenerator = () => {
               Excel URL:{" "}
               <input
                 className="form-control"
+                id="excelUrlInput"
                 placeholder="Enter Excel Sheet URL"
                 type="text"
                 ref={downloadLinkRef}
@@ -299,12 +334,17 @@ const QrGenerator = () => {
               <FontAwesomeIcon icon={faEye} />
               View
             </button>
-            <ModalComponent 
-              showModal={showModal} 
+            <ModalComponent
+              showModal={showModal}
               closeModal={closeModal}
               screen={true}
               modalHeader={"View Excel Data"}
-              modalContent={<ExcelDataViewer excelData={excelData} excelError={excelError} />}
+              modalContent={
+                <ExcelDataViewer
+                  excelData={excelData}
+                  excelError={excelError}
+                />
+              }
             />
             <div className="gen-btn">
               <button className="btn-btn" onClick={generateQRCodeData}>
@@ -316,15 +356,18 @@ const QrGenerator = () => {
         </div>
         {qrCodeData.length > 0 && (
           <div className="qr-gen">
-            <h2>Your QR Codes<span className="">
-              <button
-                type="button"
-                className="btn btn-success"
-                onClick={downloadAllQrCodes}
-              >
-                Download All
-              </button>
-          </span></h2>
+            <h2>
+              Your QR Codes
+              <span className="">
+                <button
+                  type="button"
+                  className="btn btn-btn"
+                  onClick={downloadAllQrCodes}
+                >
+                  Download All
+                </button>
+              </span>
+            </h2>
             <hr />
             <div className="qr-code-list">
               {qrCodeData.map((qrCode, index) => (
@@ -335,7 +378,7 @@ const QrGenerator = () => {
                         {qrCode}
                       </div>
                       <Button
-                        className="mt-2"
+                        className="mt-2 btn-btn"
                         variant="primary"
                         onClick={() => {
                           setSelectedRow(index);
@@ -345,7 +388,7 @@ const QrGenerator = () => {
                         View Certificates
                       </Button>
                       <Button
-                        className="mt-2"
+                        className="mt-2 btn-btn"
                         variant="success"
                         onClick={() => {
                           const qrCodeElement = document.getElementById(
@@ -364,20 +407,23 @@ const QrGenerator = () => {
           </div>
         )}
       </div>
-      <ModalComponent 
+      <ModalComponent
         dialogClassName="modal-xl"
-        showModal={selectedRow !== null} 
+        showModal={selectedRow !== null}
         closeModal={() => setSelectedRow(null)}
         screen={true}
         modalHeader={"Certificate"}
-        modalContent= {selectedRow !== null && excelData[selectedRow] && (
-          <CertificateContent
-            excelData={excelData}
-            selectedRow={selectedRow}
-            selectedQRCodeData={selectedQRCodeData}
-          />
-        )}
-      />     
+        modalContent={
+          selectedRow !== null &&
+          excelData[selectedRow] && (
+            <CertificateContent
+              excelData={excelData}
+              selectedRow={selectedRow}
+              selectedQRCodeData={selectedQRCodeData}
+            />
+          )
+        }
+      />
     </section>
   );
 };
