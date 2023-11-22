@@ -5,7 +5,6 @@ import QrGenerator from "./pages/qrGeneratorPage";
 import { Auth } from "./AuthContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import Certificate from "./pages/certificate";
 
 function App() {
   return (
@@ -16,7 +15,6 @@ function App() {
           <Route path="/ER---QR-Code-Generator" element={<LoginForm />} />
           <Route path="/qr" element={<QrGenerator />} />
           <Route path="/unAuth" element={<unAuth />} />
-          <Route path="/certificate" element={<Certificate />} />
         </Routes>
         <Footer />
       </Router>
