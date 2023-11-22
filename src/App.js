@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginForm from "./pages/login";
-import QrGenerator from "./pages/qrGenerator";
+import QrGenerator from "./pages/qrGeneratorPage";
 import { Auth } from "./AuthContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
