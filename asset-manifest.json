@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/ER---QR-Code-Generator/static/css/main.37c33a01.css",
-    "main.js": "/ER---QR-Code-Generator/static/js/main.e42629f4.js",
+    "main.css": "/ER---QR-Code-Generator/static/css/main.acd3f8ee.css",
+    "main.js": "/ER---QR-Code-Generator/static/js/main.9a6988b3.js",
     "static/js/703.6c288d01.chunk.js": "/ER---QR-Code-Generator/static/js/703.6c288d01.chunk.js",
     "static/js/513.d32cc59a.chunk.js": "/ER---QR-Code-Generator/static/js/513.d32cc59a.chunk.js",
     "static/js/787.1dab2e5b.chunk.js": "/ER---QR-Code-Generator/static/js/787.1dab2e5b.chunk.js",
@@ -10,14 +10,14 @@
     "static/media/logo.png": "/ER---QR-Code-Generator/static/media/logo.1a18e6e6d31b85ea2b47.png",
     "static/media/sampleqr.jpg": "/ER---QR-Code-Generator/static/media/sampleqr.5a9f2a35c207073ba768.jpg",
     "index.html": "/ER---QR-Code-Generator/index.html",
-    "main.37c33a01.css.map": "/ER---QR-Code-Generator/static/css/main.37c33a01.css.map",
-    "main.e42629f4.js.map": "/ER---QR-Code-Generator/static/js/main.e42629f4.js.map",
+    "main.acd3f8ee.css.map": "/ER---QR-Code-Generator/static/css/main.acd3f8ee.css.map",
+    "main.9a6988b3.js.map": "/ER---QR-Code-Generator/static/js/main.9a6988b3.js.map",
     "703.6c288d01.chunk.js.map": "/ER---QR-Code-Generator/static/js/703.6c288d01.chunk.js.map",
     "513.d32cc59a.chunk.js.map": "/ER---QR-Code-Generator/static/js/513.d32cc59a.chunk.js.map",
     "787.1dab2e5b.chunk.js.map": "/ER---QR-Code-Generator/static/js/787.1dab2e5b.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.37c33a01.css",
-    "static/js/main.e42629f4.js"
+    "static/css/main.acd3f8ee.css",
+    "static/js/main.9a6988b3.js"
   ]
 }
