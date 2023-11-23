@@ -45,9 +45,9 @@ const LoginForm = () => {
         localStorage.removeItem("rememberedPassword");
       }
 
+      setLoginStatus("Login successful");
       setTimeout(() => {
-        setIsLoading(false);
-        setLoginStatus("Login successful");
+        setIsLoading(false);      
         login();
         navigate("/ER---QR-Code-Generator/qr");
       }, 2000);
@@ -90,21 +90,23 @@ const LoginForm = () => {
                       <input
                         type="text"
                         className="input-field"
+                        id="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
                       />
-                      <label className="input-label">Email Address</label>
+                      <label htmlFor="username" className="input-label">Username</label>
                     </div>
                     <div className="input-container">
                       <input
                         type="password"
                         className="input-field"
+                        id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                       />
-                      <label className="input-label">Password</label>
+                      <label htmlFor="password" className="input-label">Password</label>
                     </div>
                     <div className="remember-me">
                       <input
