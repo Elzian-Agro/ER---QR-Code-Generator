@@ -12,7 +12,7 @@ const Header = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
       <div className="container">
-        <Link to="/" className="navbar-brand">
+        <Link to="/ER---QR-Code-Generator" className="navbar-brand">
           <img
             src={logo}
             alt="Logo"
@@ -21,9 +21,9 @@ const Header = () => {
           />
         </Link>
         <div className="d-flex gap-3 text-white">
-          <FontAwesomeIcon icon={faFacebook} />
-          <FontAwesomeIcon icon={faYoutube} />
-          <FontAwesomeIcon icon={faLinkedin} />
+          <FontAwesomeIcon icon={faFacebook} aria-label="Facebook" />
+          <FontAwesomeIcon icon={faYoutube} aria-label="Youtube" />
+          <FontAwesomeIcon icon={faLinkedin} aria-label="Linkedin" />
         </div>
       </div>
     </nav>
