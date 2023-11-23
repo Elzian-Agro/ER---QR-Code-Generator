@@ -49,7 +49,7 @@ const LoginForm = () => {
         setIsLoading(false);
         setLoginStatus("Login successful");
         login();
-        navigate("/qr");
+        navigate("/ER---QR-Code-Generator/qr");
       }, 2000);
 
     } else {

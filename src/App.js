@@ -13,8 +13,8 @@ function App() {
         <Header />
         <Routes>
           <Route path="/ER---QR-Code-Generator" element={<LoginForm />} />
-          <Route path="/qr" element={<QrGenerator />} />
-          <Route path="/unAuth" element={<unAuth />} />
+          <Route path="/ER---QR-Code-Generator/qr" element={<QrGenerator />} />
+          <Route path="/ER---QR-Code-Generator/unAuth" element={<unAuth />} />
         </Routes>
         <Footer />
       </Router>

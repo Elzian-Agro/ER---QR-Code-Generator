@@ -128,7 +128,7 @@ const QrGenerator = () => {
     localStorage.removeItem("rememberedUsername");
     localStorage.removeItem("rememberedPassword");
     // Navigate to the login page
-    navigate("/");
+    navigate("/ER---QR-Code-Generator");
   };
 
   // Modal open
