@@ -53,9 +53,9 @@ const ExcelDataViewer = ({ excelData, excelError }) => {
                       .slice(1)
                       .map((value, colIndex) => (
                         <td key={colIndex}>
-                          {colIndex === 4
+                          {colIndex === 5
                             ? formatDateFromExcel(value)
-                            : colIndex === 5
+                            : colIndex === 6
                             ? decodeEntities(value)
                             : value}
                         </td>

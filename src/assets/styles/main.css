@@ -2,10 +2,43 @@
 
 /*--------QR Code Dashboard---------*/
 
-#qrfinder {
-  margin-top: 5%;
+.qr-generator {
+  margin-top: 100px;
+  margin-bottom: 100px;
+  padding: 50px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.qr-option{
+  width: '80%';
+}
+
+.qr-content .btn-btn {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 5px;
+  font-size: 16px;
+  background-color: green;
+  color: white;
+}
+
+.qr-content .btn-btn:hover {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 5px;
+  font-size: 16px;
+  background-color: rgb(62, 192, 221);
+  color: white;
+}
+
+/* #qrfinder {
+  margin-top: 3%;
   background-color: #f5f5f5;
-  padding: 40px 0;
+  padding: 20px 0;
 }
 
 #qrfinder .container {
@@ -17,13 +50,13 @@
   font-weight: bold;
   margin-bottom: 20px;
   color: #333;
-  /* margin-left: 20%; */
+
 }
 
 #qrfinder p {
   font-size: 1.1rem;
   color: #555;
-  /* margin-left: 20%; */
+
 }
 
 #qrfinder span a {
@@ -49,11 +82,11 @@
   font-size: 16px;
   background-color: green;
   color: white;
-}
+} */
 
 
 
-#qrfinder .btn-btn:hover,
+/* #qrfinder .btn-btn:hover,
 .btn-btn1:hover {
   background-color: rgb(62, 192, 221);
 }
@@ -65,7 +98,7 @@
 
 #qrfinder .btn-btn svg {
   margin-right: 5px;
-}
+} */
 
 #dropdown {
   background-color: green;
@@ -217,11 +250,11 @@
   margin-left: 550px;
 }
 .form-control {
-  width: 88%;
+  width: 100%;
   background-color: rgb(245, 245, 245);
 }
 input{
-  height: 50px;
+  height: 40px;
 }
 /* Media queries for responsive design */
 @media (max-width: 768px) {

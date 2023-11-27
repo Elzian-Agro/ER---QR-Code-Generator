@@ -210,12 +210,12 @@ const QrGenerator = () => {
           let formattedValue = fieldValue;
 
           //formatting the date
-          if (columnName === "E") {
+          if (columnName === "F") {
             formattedValue = formatDateFromExcel(fieldValue);
           }
 
           // Decoding HTML entities for GPS coordinates
-          if (columnName === "F") {
+          if (columnName === "G") {
             formattedValue = decodeEntities(fieldValue);
           }
 
@@ -287,125 +287,154 @@ const QrGenerator = () => {
     }
   };
 
+  // Download sample excel file
+  const handleExcelDownload = async () => {   
+    const response = await fetch('../assets/Sample_Excel_Data_Sheet.xlsx');
+    const blob = await response.blob();
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(new Blob([blob]));
+    link.setAttribute('download', 'Sample_Excel_Data_Sheet.xlsx');
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <section id="qrfinder" className="py-5">
-      <div className="container">
-        <div className="row card">
-          <div className="">
-            <h2 className="">
-              Generate QR CODE{" "}
-              <span className="">
-                {" "}
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </button>
-              </span>
-            </h2>
-            <hr />
-            <p>
-              Excel URL:{" "}
-              <input
-                className="form-control"
-                id="excelUrlInput"
-                placeholder="Enter Excel Sheet URL"
-                type="text"
-                ref={downloadLinkRef}
-                onChange={handleDownload}
-              />
-            </p>
-            <br />
-            <p>Upload your details </p>
+    <section className="container qr-content">
+      <div>
+        <div className="qr-generator">
+          <div className="container qr-option">
             <div>
-              <form>
-                <label htmlFor="fileInput">Upload file XLS:&nbsp; </label>
+              <div class="d-flex align-items-center justify-content-between">
+                <h2>Generate QR CODE</h2>
+                <button type="button" class="btn btn-danger" onClick={handleLogout}>
+                    Logout
+                </button>
+              </div>
+              <br />
+              <div class="d-flex align-items-center">
+                <a href="https://docs.google.com/spreadsheets/d/1gaK91R1nfW3EDc0SgmgPvI0YBdcuy7Y88lKUQYNUAzs/edit?usp=sharing" target="_blank" rel="noreferrer">
+                  <button type="button" class="btn btn-primary btn-btn">
+                    View Sample Data Sheet
+                  </button>
+                </a>
+                <button id="downloadButton" class="btn btn-primary btn-btn" onClick={handleExcelDownload}>
+                  Download
+                </button>
+              </div>
+              <br /><hr /><br /> 
+              <div class="d-flex align-items-center">
+                <label for="excelUrlInput" style={{ minWidth: '100px' }}>Excel URL: </label>
                 <input
-                  type="file"
-                  name="fileInput"
-                  id="fileInput"
-                  onChange={handleChange}
+                    class="form-control flex-grow-1"
+                    id="excelUrlInput"
+                    placeholder="Enter Excel Sheet URL"
+                    type="text"
+                    ref={downloadLinkRef}
+                    onChange={handleDownload}
                 />
-              </form>
-            </div>
-            <button className="btn-btn view-btn" onClick={openModal}>
-              <FontAwesomeIcon icon={faEye} />
-              View
-            </button>
-            <ModalComponent
-              showModal={showModal}
-              closeModal={closeModal}
-              screen={true}
-              modalHeader={"View Excel Data"}
-              modalContent={
-                <ExcelDataViewer
-                  excelData={excelData}
-                  excelError={excelError}
-                />
-              }
-            />
-            <div className="gen-btn">
-              <button className="btn-btn" onClick={generateQRCodeData}>
-                <FontAwesomeIcon icon={faSync} />
-                Generate QR Code
-              </button>
+              </div>
+              <br /> <br />           
+              <div class="d-flex align-items-center">            
+                <form class="d-flex">
+                    <label class="me-2" for="fileInput">Upload file XLS :</label>
+                    <input
+                        type="file"
+                        name="fileInput"
+                        id="fileInput"
+                        onChange={handleChange}
+                    />
+                </form>          
+              </div>
+              <div class="d-flex justify-content-end">
+                <button class="btn btn-primary view-btn me-2 btn-btn" onClick={openModal}>
+                    <FontAwesomeIcon icon={faEye} />
+                    View
+                </button>
+                <button class="btn btn-secondary btn-btn" onClick={generateQRCodeData}>
+                    <FontAwesomeIcon icon={faSync} />
+                    Generate QR Code
+                </button>
+              </div>
             </div>
           </div>
         </div>
+        
+        <div>
+          <ModalComponent
+            showModal={showModal}
+            closeModal={closeModal}
+            screen={true}
+            modalHeader={"View Excel Data"}
+            modalContent={
+              <ExcelDataViewer
+                excelData={excelData}
+                excelError={excelError}
+              />
+            }
+          />          
+        </div>
+      
         {qrCodeData.length > 0 && (
-          <div className="qr-gen">
-            <h2>
-              Your QR Codes
-              <span className="">
-                <button
+          <div>
+            <div className="d-flex align-items-center">
+              <h2>Your QR Codes</h2>
+              <button
                   type="button"
-                  className="btn btn-btn"
+                  className="btn btn-primary ms-2 btn-btn"
                   onClick={downloadAllQrCodes}
-                >
+              >
                   Download All
-                </button>
-              </span>
-            </h2>
-            <hr />
-            <div className="qr-code-list">
-              {qrCodeData.map((qrCode, index) => (
-                <div className="qr-code-card" key={uniqueIds[index]}>
-                  <Card>
-                    <Card.Body>
-                      <div id={`qr-code-${index}`} className="qr-code">
-                        {qrCode}
-                      </div>
-                      <Button
-                        className="mt-2 btn-btn"
-                        variant="primary"
-                        onClick={() => {
-                          setSelectedRow(index);
-                          setSelectedQRCodeData(qrCodeData[index]);
-                        }}
-                      >
-                        View Certificates
-                      </Button>
-                      <Button
-                        className="mt-2 btn-btn"
-                        variant="success"
-                        onClick={() => {
-                          const qrCodeElement = document.getElementById(
-                            `qr-code-${index}`
-                          );
-                          downloadQRCode(qrCodeElement, `QRCode_${index}.png`); // Provide a filename
-                        }}
-                      >
-                        Download
-                      </Button>
-                    </Card.Body>
-                  </Card>
-                </div>
-              ))}
+              </button>
             </div>
+          
+            <hr />
+            <div className="container text-center">
+              <div className="row">
+                  {qrCodeData.map((qrCode, index) => (
+                    <div className="col-md-4 mb-4" key={uniqueIds[index]}>
+                      <div>
+                        <Card>
+                          <Card.Body>
+                            <div id={`qr-code-${index}`}>
+                              {qrCode}
+                            </div>
+                            <Button
+                              className="mt-2 btn-btn"
+                              variant="primary"
+                              onClick={() => {
+                                  setSelectedRow(index);
+                                  setSelectedQRCodeData(qrCodeData[index]);
+                              }}
+                            >
+                              View Certificates
+                            </Button>
+                            <Button
+                              className="mt-2 btn-btn"
+                              variant="success"
+                              onClick={() => {
+                                  const qrCodeElement = document.getElementById(
+                                      `qr-code-${index}`
+                                  );
+                                  downloadQRCode(
+                                      qrCodeElement,
+                                      `QRCode_${index}.png`
+                                  ); // Provide a filename
+                              }}
+                            >
+                              Download
+                            </Button>
+                          </Card.Body>
+                        </Card>
+                      </div>
+                    </div>
+                  ))}
+              </div>
           </div>
+        </div>
         )}
+      <br />
       </div>
       <ModalComponent
         dialogClassName="modal-xl"

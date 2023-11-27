@@ -2,8 +2,8 @@ import logoER from "../assets/images/logo.png";
 
 export const qrCodeConfig = {
     style: {
-        width: 250,
-        height: 250,
+        width: 280,
+        height: 280,
         margin: 3,
         type: "canvas", // Choose 'canvas' or 'svg'
         image: logoER,
