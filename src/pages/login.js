@@ -45,8 +45,8 @@ const LoginForm = () => {
         localStorage.removeItem("rememberedPassword");
       }
 
-      setLoginStatus("Login successful");
       setTimeout(() => {
+        setLoginStatus("Login successful");
         setIsLoading(false);      
         login();
         navigate("/ER---QR-Code-Generator/qr");

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import QRCodeStyling from "qr-code-styling";
-import { qrCodeConfig } from "../config/qrcode-config";
+import { qrCodeConfig } from "../config/qrcode.config";
 
 function QRCodeGenerator({ qrCodeContent }) {
     const { style } = qrCodeConfig;

@@ -17,6 +17,7 @@ import ExcelDataViewer from "../components/ExelDataViewer";
 import ModalComponent from "../components/ModalComponent";
 import CertificateContent from "../components/CertificateContent";
 import QRCodeGenerator from "../components/QRCodeGenerator";
+import { EXCEL_FILE_BASE64 } from "../assets/constants/sampleExelData";
 
 const QrGenerator = () => {
   const [excelData, setExcelData] = useState([]);
@@ -288,17 +289,29 @@ const QrGenerator = () => {
   };
 
   // Download sample excel file
-  const handleExcelDownload = async () => {   
-    const response = await fetch('../assets/Sample_Excel_Data_Sheet.xlsx');
-    const blob = await response.blob();
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(new Blob([blob]));
-    link.setAttribute('download', 'Sample_Excel_Data_Sheet.xlsx');
+  const handleExcelDownload = () => {   
+    const slicesCount = Math.ceil(atob(EXCEL_FILE_BASE64).length / 1024); // Calculate the number of slices needed to break the base64 string into chunks   
+    const byteArrays = new Array(slicesCount);  // Create an array to hold the sliced byte arrays
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Iterate through each slice
+    for (let sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
+      // Define the start and end index for the current slice
+      const begin = sliceIndex * 1024;
+      const end = Math.min(begin + 1024, atob(EXCEL_FILE_BASE64).length);      
+      const bytes = new Array(end - begin); // Create an array to hold the bytes for the current slice
+
+      // Populate the bytes array with data from the base64 string
+      for (let offset = begin, i = 0; offset < end; ++i, ++offset) {
+        bytes[i] = atob(EXCEL_FILE_BASE64).charCodeAt(offset);
+      }
+      
+      byteArrays[sliceIndex] = new Uint8Array(bytes); // Store the slice as a Uint8Array in the byteArrays array
+    }
+  
+    const blob = new Blob(byteArrays, { type: 'application/vnd.ms-excel' });   // Create a Blob from the byteArrays array   
+    saveAs(blob, 'Sample_Excel_Data_Sheet.xlsx');  // Using FileSaver.js to save the file with a specified filename
   };
+
 
   return (
     <section className="container qr-content">
@@ -314,18 +327,18 @@ const QrGenerator = () => {
               </div>
               <br />
               <div class="d-flex align-items-center">
-                <a href="https://docs.google.com/spreadsheets/d/1gaK91R1nfW3EDc0SgmgPvI0YBdcuy7Y88lKUQYNUAzs/edit?usp=sharing" target="_blank" rel="noreferrer">
+                {/* <a href="https://docs.google.com/spreadsheets/d/1gaK91R1nfW3EDc0SgmgPvI0YBdcuy7Y88lKUQYNUAzs/edit?usp=sharing" target="_blank" rel="noreferrer">
                   <button type="button" class="btn btn-primary btn-btn">
                     View Sample Data Sheet
                   </button>
-                </a>
+                </a> */}
                 <button id="downloadButton" class="btn btn-primary btn-btn" onClick={handleExcelDownload}>
-                  Download
+                  Download Sample DataSheet
                 </button>
               </div>
               <br /><hr /><br /> 
               <div class="d-flex align-items-center">
-                <label for="excelUrlInput" style={{ minWidth: '100px' }}>Excel URL: </label>
+                <label for="excelUrlInput" style={{ minWidth: '85px' }}>Excel URL :</label>
                 <input
                     class="form-control flex-grow-1"
                     id="excelUrlInput"
