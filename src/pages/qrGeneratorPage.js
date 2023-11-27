@@ -10,6 +10,7 @@ import axios from "axios";
 import * as XLSX from "xlsx";
 import { utils, read } from "xlsx";
 import { Chart } from "chart.js/auto";
+import he from "he";
 import "../assets/fontAwesome/fontAwesomeIcon";
 import ".././assets/styles/main.css";
 import ExcelDataViewer from "../components/ExelDataViewer";
@@ -192,9 +193,8 @@ const QrGenerator = () => {
     };
 
     // Decodes HTML entities in a string to their corresponding characters
-    const decodeEntities = (encodedString) =>
-      new DOMParser().parseFromString(encodedString, "text/html").body
-        .textContent;
+    const decodeEntities = (encodedString) => 
+      he.decode(encodedString);
 
     let firstRowData = { ...excelData[0] }; // Store the first row's data for coloumn names
 
