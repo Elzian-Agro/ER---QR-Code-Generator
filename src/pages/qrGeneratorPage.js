@@ -289,29 +289,24 @@ const QrGenerator = () => {
   };
 
   // Download sample excel file
-  const handleExcelDownload = () => {   
-    const slicesCount = Math.ceil(atob(EXCEL_FILE_BASE64).length / 1024); // Calculate the number of slices needed to break the base64 string into chunks   
-    const byteArrays = new Array(slicesCount);  // Create an array to hold the sliced byte arrays
+  const handleExcelDownload = () => {
+    const byteArrays = []; // Create an array to hold the sliced byte arrays
 
-    // Iterate through each slice
-    for (let sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
-      // Define the start and end index for the current slice
-      const begin = sliceIndex * 1024;
-      const end = Math.min(begin + 1024, atob(EXCEL_FILE_BASE64).length);      
-      const bytes = new Array(end - begin); // Create an array to hold the bytes for the current slice
+    for (let offset = 0; offset < atob(EXCEL_FILE_BASE64).length; offset += 1024) {
+      const chunk = atob(EXCEL_FILE_BASE64).slice(offset, offset + 1024); // Get a chunk of data
 
-      // Populate the bytes array with data from the base64 string
-      for (let offset = begin, i = 0; offset < end; ++i, ++offset) {
-        bytes[i] = atob(EXCEL_FILE_BASE64).charCodeAt(offset);
-      }
+      const bytes = new Uint8Array(chunk.length); // Create a Uint8Array for the chunk
       
-      byteArrays[sliceIndex] = new Uint8Array(bytes); // Store the slice as a Uint8Array in the byteArrays array
-    }
-  
-    const blob = new Blob(byteArrays, { type: 'application/vnd.ms-excel' });   // Create a Blob from the byteArrays array   
-    saveAs(blob, 'Sample_Excel_Data_Sheet.xlsx');  // Using FileSaver.js to save the file with a specified filename
-  };
+      for (let i = 0; i < chunk.length; i++) {
+        bytes[i] = chunk.charCodeAt(i); // Populate the Uint8Array with data from the chunk
+      }
 
+      byteArrays.push(bytes); // Store the chunk as a Uint8Array in the byteArrays array
+    }
+
+    const blob = new Blob(byteArrays, { type: 'application/vnd.ms-excel' }); // Create a Blob from the byteArrays array
+    saveAs(blob, 'Sample_Excel_Data_Sheet.xlsx'); // Using FileSaver.js to save the file with a specified filename
+  };
 
   return (
     <section className="container qr-content">
@@ -319,28 +314,28 @@ const QrGenerator = () => {
         <div className="qr-generator">
           <div className="container qr-option">
             <div>
-              <div class="d-flex align-items-center justify-content-between">
+              <div className="d-flex align-items-center justify-content-between">
                 <h2>Generate QR CODE</h2>
-                <button type="button" class="btn btn-danger" onClick={handleLogout}>
+                <button type="button" className="btn btn-danger" onClick={handleLogout}>
                     Logout
                 </button>
               </div>
               <br />
-              <div class="d-flex align-items-center">
+              <div className="d-flex align-items-center">
                 {/* <a href="https://docs.google.com/spreadsheets/d/1gaK91R1nfW3EDc0SgmgPvI0YBdcuy7Y88lKUQYNUAzs/edit?usp=sharing" target="_blank" rel="noreferrer">
-                  <button type="button" class="btn btn-primary btn-btn">
+                  <button type="button" className="btn btn-primary btn-btn">
                     View Sample Data Sheet
                   </button>
                 </a> */}
-                <button id="downloadButton" class="btn btn-primary btn-btn" onClick={handleExcelDownload}>
+                <button id="downloadButton" className="btn btn-primary btn-btn" onClick={handleExcelDownload}>
                   Download Sample DataSheet
                 </button>
               </div>
               <br /><hr /><br /> 
-              <div class="d-flex align-items-center">
-                <label for="excelUrlInput" style={{ minWidth: '85px' }}>Excel URL :</label>
+              <div className="d-flex align-items-center">
+                <label htmlFor="excelUrlInput" style={{ minWidth: '85px' }}>Excel URL :</label>
                 <input
-                    class="form-control flex-grow-1"
+                    className="form-control flex-grow-1"
                     id="excelUrlInput"
                     placeholder="Enter Excel Sheet URL"
                     type="text"
@@ -349,9 +344,9 @@ const QrGenerator = () => {
                 />
               </div>
               <br /> <br />           
-              <div class="d-flex align-items-center">            
-                <form class="d-flex">
-                    <label class="me-2" for="fileInput">Upload file XLS :</label>
+              <div className="d-flex align-items-center">            
+                <form className="d-flex">
+                    <label className="me-2" htmlFor="fileInput">Upload file XLS :</label>
                     <input
                         type="file"
                         name="fileInput"
@@ -360,12 +355,12 @@ const QrGenerator = () => {
                     />
                 </form>          
               </div>
-              <div class="d-flex justify-content-end">
-                <button class="btn btn-primary view-btn me-2 btn-btn" onClick={openModal}>
+              <div className="d-flex justify-content-end">
+                <button className="btn btn-primary view-btn me-2 btn-btn" onClick={openModal}>
                     <FontAwesomeIcon icon={faEye} />
                     View
                 </button>
-                <button class="btn btn-secondary btn-btn" onClick={generateQRCodeData}>
+                <button className="btn btn-secondary btn-btn" onClick={generateQRCodeData}>
                     <FontAwesomeIcon icon={faSync} />
                     Generate QR Code
                 </button>
