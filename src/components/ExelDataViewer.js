@@ -1,22 +1,20 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+//Format date
+export const formatDateFromExcel = (dateSerialNumber) => {
+  // Convert Excel date serial number to milliseconds
+  const sheetDate = new Date((dateSerialNumber - 25569) * 86400 * 1000);
+  return `${sheetDate.getMonth() + 1}.${sheetDate.getDate()}.${sheetDate.getFullYear()}`;
+};
+
+// Decodes HTML entities in a string
+export const decodeEntities = (encodedString) =>
+  new DOMParser().parseFromString(encodedString, "text/html").body
+    .textContent;
+
 const ExcelDataViewer = ({ excelData, excelError }) => {
   const isLocalFile = Array.isArray(excelData[0]);
-
-  //Format date
-  const formatDateFromExcel = (dateSerialNumber) => {
-    // Convert Excel date serial number to milliseconds
-    const sheetDate = new Date((dateSerialNumber - 25569) * 86400 * 1000);
-    return `${
-      sheetDate.getMonth() + 1
-    }.${sheetDate.getDate()}.${sheetDate.getFullYear()}`;
-  };
-
-  // Decodes HTML entities in a string
-  const decodeEntities = (encodedString) =>
-    new DOMParser().parseFromString(encodedString, "text/html").body
-      .textContent;
 
   return (
     <div className="table-container">
