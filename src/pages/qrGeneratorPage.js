@@ -425,7 +425,7 @@ const QrGenerator = () => {
                             <div id={`qr-code-${index}`}>
                               {qrCode}
                             </div>
-                            <Button
+                            {/* <Button
                               className="mt-2 btn-btn"
                               variant="primary"
                               onClick={() => {
@@ -434,7 +434,7 @@ const QrGenerator = () => {
                               }}
                             >
                               View Certificates
-                            </Button>
+                            </Button> */}
                             <Button
                               className="mt-2 btn-btn"
                               variant="success"
