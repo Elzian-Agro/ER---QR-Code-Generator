@@ -18,6 +18,7 @@ import ModalComponent from "../components/ModalComponent";
 import CertificateContent from "../components/CertificateContent";
 import QRCodeGenerator from "../components/QRCodeGenerator";
 import { EXCEL_FILE_BASE64 } from "../assets/constants/sampleExelData";
+import userGuidePDF from "../assets/constants/Accessing_Your_LifeForce_Ledger.pdf"
 
 const QrGenerator = () => {
   const [excelData, setExcelData] = useState([]);
@@ -308,6 +309,11 @@ const QrGenerator = () => {
     saveAs(blob, 'Sample_Excel_Data_Sheet.xlsx'); // Using FileSaver.js to save the file with a specified filename
   };
 
+  const handleDownloadUserGuide = () => {
+    // Trigger download of the user guide PDF
+    window.open(userGuidePDF, "_blank");
+  };
+
   return (
     <section className="container qr-content">
       <div>
@@ -329,6 +335,14 @@ const QrGenerator = () => {
                 </a> */}
                 <button id="downloadButton" className="btn btn-primary btn-btn" onClick={handleExcelDownload} data-testid="btn-sample-sheet-download">
                   Download Sample DataSheet
+                </button>
+              </div>
+              <div className="d-flex align-items-center">
+                <button
+                  className="btn btn-primary btn-btn"
+                  onClick={handleDownloadUserGuide}
+                >
+                  Download User Guide
                 </button>
               </div>
               <br /><hr /><br /> 
