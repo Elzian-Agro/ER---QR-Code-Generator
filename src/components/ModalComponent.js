@@ -16,7 +16,7 @@ const ModalComponent = ({ showModal, closeModal, screen, modalHeader, modalConte
 ModalComponent.propTypes = {
   showModal: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,
-  screen: PropTypes.string,
+  screen: PropTypes.bool,
   modalHeader: PropTypes.string,
   modalContent: PropTypes.node,
 };

@@ -122,7 +122,7 @@ const QrGenerator = () => {
 
   // Check if the user is authenticated
   if (!authenticated) {
-    return <Navigate to="/unAuth" />;
+    return <Navigate to="/ER---QR-Code-Generator/unAuth" />;
   }
 
   // Handle logout
@@ -316,7 +316,7 @@ const QrGenerator = () => {
             <div>
               <div className="d-flex align-items-center justify-content-between">
                 <h2>Generate QR CODE</h2>
-                <button type="button" className="btn btn-danger" onClick={handleLogout}>
+                <button type="button" className="btn btn-danger" onClick={handleLogout} data-testid="btn-loguot">
                     Logout
                 </button>
               </div>
@@ -327,7 +327,7 @@ const QrGenerator = () => {
                     View Sample Data Sheet
                   </button>
                 </a> */}
-                <button id="downloadButton" className="btn btn-primary btn-btn" onClick={handleExcelDownload}>
+                <button id="downloadButton" className="btn btn-primary btn-btn" onClick={handleExcelDownload} data-testid="btn-sample-sheet-download">
                   Download Sample DataSheet
                 </button>
               </div>
@@ -341,6 +341,7 @@ const QrGenerator = () => {
                     type="text"
                     ref={downloadLinkRef}
                     onChange={handleDownload}
+                    data-testid="url-input"
                 />
               </div>
               <br /> <br />           
@@ -352,15 +353,16 @@ const QrGenerator = () => {
                         name="fileInput"
                         id="fileInput"
                         onChange={handleChange}
+                        data-testid="file-input"
                     />
                 </form>          
               </div>
               <div className="d-flex justify-content-end">
-                <button className="btn btn-primary view-btn me-2 btn-btn" onClick={openModal}>
+                <button className="btn btn-primary view-btn me-2 btn-btn" onClick={openModal} data-testid="btn-view-data">
                     <FontAwesomeIcon icon={faEye} />
                     View
                 </button>
-                <button className="btn btn-secondary btn-btn" onClick={generateQRCodeData}>
+                <button className="btn btn-secondary btn-btn" onClick={generateQRCodeData} data-testid="btn-gen-qr">
                     <FontAwesomeIcon icon={faSync} />
                     Generate QR Code
                 </button>
@@ -389,11 +391,12 @@ const QrGenerator = () => {
             <div className="d-flex align-items-center">
               <h2>Your QR Codes</h2>
               <button
-                  type="button"
-                  className="btn btn-primary ms-2 btn-btn"
-                  onClick={downloadAllQrCodes}
+                type="button"
+                className="btn btn-primary ms-2 btn-btn"
+                onClick={downloadAllQrCodes}
+                data-testid="btn-download-all-qr"
               >
-                  Download All
+                Download All
               </button>
             </div>
           
